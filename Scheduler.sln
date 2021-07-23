@@ -16,8 +16,11 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Schd.Data", "src\Schd.Data\Schd.Data.csproj", "{3F6B290B-43FB-40A5-B07A-823C8889226E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "demo", "demo", "{EE3856D6-6C3A-4DDF-8962-E5C15288462D}"
+	ProjectSection(SolutionItems) = preProject
+		Readme.txt = Readme.txt
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RabbitWebApi", "demo\RabbitWebApi\RabbitWebApi.csproj", "{B05A9499-E55B-44E3-955F-56AB0FC5499C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RabbitWebApi", "demo\RabbitWebApi\RabbitWebApi.csproj", "{B05A9499-E55B-44E3-955F-56AB0FC5499C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

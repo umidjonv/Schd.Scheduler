@@ -27,7 +27,7 @@ namespace RabbitWebApi
         {
             services.AddControllers();
 
-            services.AddSingleton<IRabbitClient>(x => new RabbitClient("admin", "admin", "localhost:5672"));
+            services.AddSingleton<IRabbitClient>(x => new RabbitClient());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -21,17 +21,27 @@ namespace RabbitProject.Rabbit
             _currentChannel.ExchangeDeclare(CHANNEL_NAME, ExchangeType.Fanout);
             _currentChannel.QueueDeclare(CHANNEL_NAME, false, false, false);
         }
-        
-        
+
+        public RabbitClient()
+        {
+            _factory = new ConnectionFactory();
+            _factory.Uri = new Uri("amqp://guest:guest@localhost:5672/");
+
+            _connection = _factory.CreateConnection();
+            CreateModel();
+        }
+
         public RabbitClient(string username, string password, string hostname)
         {
             _factory = new ConnectionFactory();
+
             _factory.UserName = username;
             _factory.Password = password;
             _factory.VirtualHost = "/";
             _factory.HostName = hostname;
 
             _connection = _factory.CreateConnection();
+            CreateModel();
 
         }
 
