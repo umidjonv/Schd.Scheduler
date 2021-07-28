@@ -31,5 +31,16 @@ namespace RabbitWebApi.Controllers
             return Ok();
         }
 
+        [HttpGet]
+        public IActionResult Send()
+        {
+            _rabbitClient.Publish(new BaseModel()
+            {
+                Id = Guid.NewGuid(),
+                Name = "NewModel_" + DateTime.Now.ToShortDateString()
+            });
+            return Ok();
+        }
+
     }
 }
