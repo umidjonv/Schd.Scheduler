@@ -1,10 +1,10 @@
-﻿using Microsoft.eShopOnContainers.BuildingBlocks.EventBus.Abstractions;
-using Microsoft.eShopOnContainers.BuildingBlocks.EventBus.Events;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Microsoft.eShopOnContainers.BuildingBlocks.EventBus.Abstractions;
+using Microsoft.eShopOnContainers.BuildingBlocks.EventBus.Events;
 using static Microsoft.eShopOnContainers.BuildingBlocks.EventBus.InMemoryEventBusSubscriptionsManager;
 
-namespace Microsoft.eShopOnContainers.BuildingBlocks.EventBus
+namespace Microsoft.BuildingBlocks.EventBus
 {
     public interface IEventBusSubscriptionsManager
     {

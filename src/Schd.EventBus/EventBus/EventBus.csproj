@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RootNamespace>Microsoft.eShopOnContainers.BuildingBlocks.EventBus</RootNamespace>
+    <RootNamespace>Microsoft.BuildingBlocks.EventBus</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

@@ -9,6 +9,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MassTransit;
+using Microsoft.BuildingBlocks.EventBusRabbitMQ;
+using Microsoft.Extensions.Logging;
+using RabbitMQ.Client;
 using Schd.Common;
 using Schd.Notification.Models.EventBus;
 
@@ -50,6 +53,30 @@ namespace Schd.Notification
                     });
 
                 });
+            });
+
+            services.AddSingleton<IRabbitMQPersistentConnection>(sp =>
+            {
+                var logger = sp.GetRequiredService<ILogger<DefaultRabbitMQPersistentConnection>>();
+
+                var factory = new ConnectionFactory()
+                {
+                    HostName = config.RabbitConnection,
+                    DispatchConsumersAsync = true
+                };
+
+                
+                factory.UserName = config.RabbitUsername;
+                factory.Password = config.RabbitPassword;
+                
+
+                var retryCount = 5;
+                if (!string.IsNullOrEmpty(Configuration["EventBusRetryCount"]))
+                {
+                    retryCount = int.Parse(Configuration["EventBusRetryCount"]);
+                }
+
+                return new DefaultRabbitMQPersistentConnection(factory, logger, retryCount);
             });
 
             services.AddSwaggerGen();

@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.BuildingBlocks.EventBus;
 
 namespace Microsoft.eShopOnContainers.BuildingBlocks.EventBus
 {

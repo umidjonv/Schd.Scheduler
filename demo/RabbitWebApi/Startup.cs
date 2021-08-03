@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.eShopOnContainers.BuildingBlocks.EventBus.Abstractions;
-using Microsoft.eShopOnContainers.BuildingBlocks.EventBusRabbitMQ;
+using Microsoft.BuildingBlocks.EventBusRabbitMQ;
 using RabbitMQ.Client;
 using RabbitProject.Rabbit;
 
