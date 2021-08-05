@@ -8,8 +8,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Autofac;
 using MassTransit;
+using Microsoft.BuildingBlocks.EventBus;
 using Microsoft.BuildingBlocks.EventBusRabbitMQ;
+using Microsoft.eShopOnContainers.BuildingBlocks.EventBus.Abstractions;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using Schd.Common;
@@ -37,23 +40,24 @@ namespace Schd.Notification
 
             services.AddLogging();
 
-            services.AddMassTransit(x =>
-            {
-                x.UsingRabbitMq((ctx, cfg) =>
-                {
-                    cfg.Host(config.RabbitConnection);//, x =>
-                    //{
-                    //    x.Username(config.RabbitUsername);
-                    //    x.Password(config.RabbitPassword);
-                    //});
+            
+            //services.AddMassTransit(x =>
+            //{
+            //    x.UsingRabbitMq((ctx, cfg) =>
+            //    {
+            //        cfg.Host(config.RabbitConnection);//, x =>
+            //        //{
+            //        //    x.Username(config.RabbitUsername);
+            //        //    x.Password(config.RabbitPassword);
+            //        //});
 
-                    cfg.ReceiveEndpoint("notify-queue", e =>
-                    {
-                        e.ConfigureConsumer<NotifyConsumer>(ctx);
-                    });
+            //        cfg.ReceiveEndpoint("notify-queue", e =>
+            //        {
+            //            e.ConfigureConsumer<NotifyConsumer>(ctx);
+            //        });
 
-                });
-            });
+            //    });
+            //});
 
             services.AddSingleton<IRabbitMQPersistentConnection>(sp =>
             {
@@ -79,10 +83,30 @@ namespace Schd.Notification
                 return new DefaultRabbitMQPersistentConnection(factory, logger, retryCount);
             });
 
+            services.AddSingleton<IEventBus, EventBusRabbitMQ>(sp =>
+            {
+                var subscriptionClientName = Configuration["SubscriptionClientName"];
+                var rabbitMQPersistentConnection = sp.GetRequiredService<IRabbitMQPersistentConnection>();
+                var iLifetimeScope = sp.GetRequiredService<ILifetimeScope>();
+                var logger = sp.GetRequiredService<ILogger<EventBusRabbitMQ>>();
+                var eventBusSubcriptionsManager = sp.GetRequiredService<IEventBusSubscriptionsManager>();
+
+                var retryCount = 5;
+                if (!string.IsNullOrEmpty(Configuration["EventBusRetryCount"]))
+                {
+                    retryCount = int.Parse(Configuration["EventBusRetryCount"]);
+                }
+
+                return new EventBusRabbitMQ(rabbitMQPersistentConnection, logger, iLifetimeScope, eventBusSubcriptionsManager, subscriptionClientName, retryCount);
+            });
+
+            //services.add
+
+
             services.AddSwaggerGen();
 
 
-            services.AddMassTransitHostedService();
+            //services.AddMassTransitHostedService();
 
         }
 
