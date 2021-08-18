@@ -12,7 +12,7 @@ using Schd.Notification.Models;
 namespace Schd.Notification.Controllers
 {
     [ApiController]
-    [Route("api/[controller]/[action]")]
+    [Route("[controller]/[action]")]
     public class NotifyController : ControllerBase
     {
         private readonly ILogger<NotifyController> _logger;
@@ -25,10 +25,10 @@ namespace Schd.Notification.Controllers
         }
 
         [HttpGet]
-        [ProducesDefaultResponseType(typeof(ApiResponse<string>))]
-        public async Task<IActionResult> Send()
+        [ProducesDefaultResponseType(typeof(ApiResponse))]
+        public IActionResult Send()
         {
-            await _publishEndpoint.Publish(new Models.EventBus.NotifyMessage
+            _publishEndpoint.Publish(new Models.EventBus.NotifyMessage
             {
                 Id= Guid.NewGuid(),
                 Message = "Sending Message",

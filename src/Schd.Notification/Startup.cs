@@ -16,6 +16,8 @@ using Microsoft.eShopOnContainers.BuildingBlocks.EventBus.Abstractions;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using Schd.Common;
+using Schd.Data;
+using Schd.Notification.Infrastructure;
 using Schd.Notification.Models.EventBus;
 
 namespace Schd.Notification
@@ -32,82 +34,87 @@ namespace Schd.Notification
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
-
+            //services.AddControllersWithViews();
+            services.AddControllers();
             var config = new AppConfig();
 
             Configuration.GetSection("Configuration").Bind(config);
 
             services.AddLogging();
 
-            
-            //services.AddMassTransit(x =>
-            //{
-            //    x.UsingRabbitMq((ctx, cfg) =>
-            //    {
-            //        cfg.Host(config.RabbitConnection);//, x =>
-            //        //{
-            //        //    x.Username(config.RabbitUsername);
-            //        //    x.Password(config.RabbitPassword);
-            //        //});
 
-            //        cfg.ReceiveEndpoint("notify-queue", e =>
-            //        {
-            //            e.ConfigureConsumer<NotifyConsumer>(ctx);
-            //        });
-
-            //    });
-            //});
-
-            services.AddSingleton<IRabbitMQPersistentConnection>(sp =>
+            services.AddMassTransit(x =>
             {
-                var logger = sp.GetRequiredService<ILogger<DefaultRabbitMQPersistentConnection>>();
+                x.AddConsumer<NotifyConsumer>();
 
-                var factory = new ConnectionFactory()
+                x.UsingRabbitMq((ctx, cfg) =>
                 {
-                    HostName = config.RabbitConnection,
-                    DispatchConsumersAsync = true
-                };
+                    cfg.Host(config.RabbitConnection, x =>
+                    {
+                        x.Username(config.RabbitUsername);
+                        x.Password(config.RabbitPassword);
+                    });
 
-                
-                factory.UserName = config.RabbitUsername;
-                factory.Password = config.RabbitPassword;
-                
+                    cfg.ReceiveEndpoint("notify-queue", e =>
+                    {
+                        e.ConfigureConsumer<NotifyConsumer>(ctx);
+                    });
 
-                var retryCount = 5;
-                if (!string.IsNullOrEmpty(Configuration["EventBusRetryCount"]))
-                {
-                    retryCount = int.Parse(Configuration["EventBusRetryCount"]);
-                }
-
-                return new DefaultRabbitMQPersistentConnection(factory, logger, retryCount);
+                });
             });
 
-            services.AddSingleton<IEventBus, EventBusRabbitMQ>(sp =>
-            {
-                var subscriptionClientName = Configuration["SubscriptionClientName"];
-                var rabbitMQPersistentConnection = sp.GetRequiredService<IRabbitMQPersistentConnection>();
-                var iLifetimeScope = sp.GetRequiredService<ILifetimeScope>();
-                var logger = sp.GetRequiredService<ILogger<EventBusRabbitMQ>>();
-                var eventBusSubcriptionsManager = sp.GetRequiredService<IEventBusSubscriptionsManager>();
+            services.AddMassTransitHostedService();
 
-                var retryCount = 5;
-                if (!string.IsNullOrEmpty(Configuration["EventBusRetryCount"]))
-                {
-                    retryCount = int.Parse(Configuration["EventBusRetryCount"]);
-                }
+            ////services.AddSingleton<IRabbitMQPersistentConnection>(sp =>
+            ////{
+            ////    var logger = sp.GetRequiredService<ILogger<DefaultRabbitMQPersistentConnection>>();
 
-                return new EventBusRabbitMQ(rabbitMQPersistentConnection, logger, iLifetimeScope, eventBusSubcriptionsManager, subscriptionClientName, retryCount);
-            });
+            ////    var factory = new ConnectionFactory()
+            ////    {
+            ////        HostName = config.RabbitConnection,
+            ////        DispatchConsumersAsync = true
+            ////    };
 
-            //services.add
+
+            ////    factory.UserName = config.RabbitUsername;
+            ////    factory.Password = config.RabbitPassword;
+
+
+            ////    var retryCount = 5;
+            ////    if (!string.IsNullOrEmpty(Configuration["EventBusRetryCount"]))
+            ////    {
+            ////        retryCount = int.Parse(Configuration["EventBusRetryCount"]);
+            ////    }
+
+            ////    return new DefaultRabbitMQPersistentConnection(factory, logger, retryCount);
+            ////});
+
+            ////services.AddSingleton<IEventBus, EventBusRabbitMQ>(sp =>
+            ////{
+            ////    var subscriptionClientName = Configuration["SubscriptionClientName"];
+            ////    var rabbitMQPersistentConnection = sp.GetRequiredService<IRabbitMQPersistentConnection>();
+            ////    var iLifetimeScope = sp.GetRequiredService<ILifetimeScope>();
+            ////    var logger = sp.GetRequiredService<ILogger<EventBusRabbitMQ>>();
+            ////    var eventBusSubcriptionsManager = sp.GetRequiredService<IEventBusSubscriptionsManager>();
+
+            ////    var retryCount = 5;
+            ////    if (!string.IsNullOrEmpty(Configuration["EventBusRetryCount"]))
+            ////    {
+            ////        retryCount = int.Parse(Configuration["EventBusRetryCount"]);
+            ////    }
+
+            ////    return new EventBusRabbitMQ(rabbitMQPersistentConnection, logger, iLifetimeScope, eventBusSubcriptionsManager, subscriptionClientName, retryCount);
+            ////});
 
 
             services.AddSwaggerGen();
+            
+        }
 
-
-            //services.AddMassTransitHostedService();
-
+        protected virtual void ConfigureEventBus(IApplicationBuilder app)
+        {
+            var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
+            eventBus.Subscribe<Notify, NotifyEventHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -129,12 +136,17 @@ namespace Schd.Notification
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "NotifyMessage API V1");
-                c.RoutePrefix = string.Empty;
+                //c.RoutePrefix = string.Empty;
             });
 
-
             app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
             
+            
+            //ConfigureEventBus(app);
         }
     }
 }
