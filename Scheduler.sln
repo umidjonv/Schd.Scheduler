@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Schd.Notification", "src\Sc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Schd.Common", "src\Schd.Common\Schd.Common.csproj", "{82FA712B-694A-4478-9E37-5C97F4D73F5E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Schd.Data", "src\Schd.Data\Schd.Data.csproj", "{3F6B290B-43FB-40A5-B07A-823C8889226E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Schd.Notification.Data", "src\Schd.Data\Schd.Notification.Data.csproj", "{3F6B290B-43FB-40A5-B07A-823C8889226E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "demo", "demo", "{EE3856D6-6C3A-4DDF-8962-E5C15288462D}"
 	ProjectSection(SolutionItems) = preProject

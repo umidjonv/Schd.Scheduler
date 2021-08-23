@@ -16,7 +16,6 @@ using Microsoft.eShopOnContainers.BuildingBlocks.EventBus.Abstractions;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using Schd.Common;
-using Schd.Data;
 using Schd.Notification.Infrastructure;
 using Schd.Notification.Models.EventBus;
 

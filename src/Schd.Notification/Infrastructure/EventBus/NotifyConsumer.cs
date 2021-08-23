@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Schd.Notification.Models.EventBus
 {
-    public class NotifyConsumer : IConsumer<NotifyMessage>
+    public class NotifyConsumer : IConsumer<Notify>
     {
         ILogger<NotifyConsumer> _logger;
 
@@ -16,7 +16,7 @@ namespace Schd.Notification.Models.EventBus
             _logger = logger;
         }
 
-        public async Task Consume(ConsumeContext<NotifyMessage> context)
+        public async Task Consume(ConsumeContext<Notify> context)
         {
             _logger.LogInformation("Value: {Value}", context.Message);
         }

@@ -7,13 +7,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using MassTransit;
 using Schd.Common.Response;
+using Schd.Notification.Data;
 using Schd.Notification.Models;
 
 namespace Schd.Notification.Controllers
 {
-    [ApiController]
-    [Route("[controller]/[action]")]
-    public class NotifyController : ControllerBase
+
+    public class NotifyController : BaseController
     {
         private readonly ILogger<NotifyController> _logger;
         private readonly IPublishEndpoint _publishEndpoint;
@@ -28,19 +28,27 @@ namespace Schd.Notification.Controllers
         [ProducesDefaultResponseType(typeof(ApiResponse))]
         public IActionResult Send()
         {
-            _publishEndpoint.Publish(new Models.EventBus.NotifyMessage
+            _publishEndpoint.Publish(new Notify()
             {
                 Id= Guid.NewGuid(),
                 Message = "Sending Message",
-                SendDate = DateTime.Now,
-                ServiceName = "NotifyMessage"
+                CreationDate = DateTime.Now,
+                //ServiceName = "NotifyMessage"
             });
 
             return Ok();
         }
 
+        [HttpPost]
+        [ProducesDefaultResponseType(typeof(ApiResponse))]
+        public IActionResult ClientRegister()
+        {
 
-        
-        
+            return Ok();
+        }
+
+
+
+
     }
 }

@@ -6,6 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data\**" />
+    <Content Remove="Data\**" />
+    <EmbeddedResource Remove="Data\**" />
+    <None Remove="Data\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="MassTransit" Version="7.2.1" />
     <PackageReference Include="MassTransit.AspNetCore" Version="7.2.1" />
     <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="7.2.1" />
@@ -18,13 +25,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\" />
-    <Folder Include="Infrastructure\Enums\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Schd.Common\Schd.Common.csproj" />
-    <ProjectReference Include="..\Schd.Data\Schd.Data.csproj" />
+    <ProjectReference Include="..\Schd.Data\Schd.Notification.Data.csproj" />
   </ItemGroup>
 
 </Project>

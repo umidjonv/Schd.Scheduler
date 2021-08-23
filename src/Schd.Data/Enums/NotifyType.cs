@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Schd.Data.Enums
+﻿namespace Schd.Notification.Data.Enums
 {
     public enum NotifyType
     {
