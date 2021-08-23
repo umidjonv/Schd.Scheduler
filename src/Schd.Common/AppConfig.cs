@@ -10,6 +10,7 @@ namespace Schd.Common
 
         public string RabbitPassword { get; set; }
 
+        public string DbConnection { get; set; }
 
 
     }

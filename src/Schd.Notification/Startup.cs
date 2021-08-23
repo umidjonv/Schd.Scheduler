@@ -4,20 +4,11 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Autofac;
 using MassTransit;
-using Microsoft.BuildingBlocks.EventBus;
-using Microsoft.BuildingBlocks.EventBusRabbitMQ;
-using Microsoft.eShopOnContainers.BuildingBlocks.EventBus.Abstractions;
-using Microsoft.Extensions.Logging;
-using RabbitMQ.Client;
 using Schd.Common;
-using Schd.Notification.Infrastructure;
 using Schd.Notification.Models.EventBus;
+using Schd.Notification.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Schd.Notification
 {
@@ -30,10 +21,10 @@ namespace Schd.Notification
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddControllersWithViews();
+
             services.AddControllers();
             var config = new AppConfig();
 
@@ -41,6 +32,7 @@ namespace Schd.Notification
 
             services.AddLogging();
 
+            services.AddDbContext<IAppDbContext, AppDbContext>(options=>options.UseNpgsql(config.DbConnection));
 
             services.AddMassTransit(x =>
             {
@@ -64,59 +56,11 @@ namespace Schd.Notification
 
             services.AddMassTransitHostedService();
 
-            ////services.AddSingleton<IRabbitMQPersistentConnection>(sp =>
-            ////{
-            ////    var logger = sp.GetRequiredService<ILogger<DefaultRabbitMQPersistentConnection>>();
-
-            ////    var factory = new ConnectionFactory()
-            ////    {
-            ////        HostName = config.RabbitConnection,
-            ////        DispatchConsumersAsync = true
-            ////    };
-
-
-            ////    factory.UserName = config.RabbitUsername;
-            ////    factory.Password = config.RabbitPassword;
-
-
-            ////    var retryCount = 5;
-            ////    if (!string.IsNullOrEmpty(Configuration["EventBusRetryCount"]))
-            ////    {
-            ////        retryCount = int.Parse(Configuration["EventBusRetryCount"]);
-            ////    }
-
-            ////    return new DefaultRabbitMQPersistentConnection(factory, logger, retryCount);
-            ////});
-
-            ////services.AddSingleton<IEventBus, EventBusRabbitMQ>(sp =>
-            ////{
-            ////    var subscriptionClientName = Configuration["SubscriptionClientName"];
-            ////    var rabbitMQPersistentConnection = sp.GetRequiredService<IRabbitMQPersistentConnection>();
-            ////    var iLifetimeScope = sp.GetRequiredService<ILifetimeScope>();
-            ////    var logger = sp.GetRequiredService<ILogger<EventBusRabbitMQ>>();
-            ////    var eventBusSubcriptionsManager = sp.GetRequiredService<IEventBusSubscriptionsManager>();
-
-            ////    var retryCount = 5;
-            ////    if (!string.IsNullOrEmpty(Configuration["EventBusRetryCount"]))
-            ////    {
-            ////        retryCount = int.Parse(Configuration["EventBusRetryCount"]);
-            ////    }
-
-            ////    return new EventBusRabbitMQ(rabbitMQPersistentConnection, logger, iLifetimeScope, eventBusSubcriptionsManager, subscriptionClientName, retryCount);
-            ////});
-
 
             services.AddSwaggerGen();
             
         }
 
-        protected virtual void ConfigureEventBus(IApplicationBuilder app)
-        {
-            var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
-            eventBus.Subscribe<Notify, NotifyEventHandler>();
-        }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -126,7 +70,7 @@ namespace Schd.Notification
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+               
                 app.UseHsts();
             }
 
@@ -135,7 +79,7 @@ namespace Schd.Notification
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "NotifyMessage API V1");
-                //c.RoutePrefix = string.Empty;
+                c.RoutePrefix = string.Empty;
             });
 
             app.UseRouting();

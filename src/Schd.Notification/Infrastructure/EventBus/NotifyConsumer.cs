@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MassTransit;
 using Microsoft.Extensions.Logging;
+using Schd.Notification.Data;
 
 namespace Schd.Notification.Models.EventBus
 {
