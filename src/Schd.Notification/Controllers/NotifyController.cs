@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using MassTransit;
 using Schd.Common.Response;
 using Schd.Notification.Data;
+using Schd.Notification.Data.Enums;
 using Schd.Notification.Models;
 
 namespace Schd.Notification.Controllers
@@ -17,27 +18,67 @@ namespace Schd.Notification.Controllers
     {
         private readonly ILogger<NotifyController> _logger;
         private readonly IPublishEndpoint _publishEndpoint;
+        private readonly AppDbContext _db;
 
-        public NotifyController(ILogger<NotifyController> logger, IPublishEndpoint publishEndpoint)
+        private void AddStateHistory(State state)
+        {
+            var stateHistory = new StateHistory
+            {
+                ClientId = state.ClientId,
+                NotifyId = state.NotifyId,
+                Type = state.Type
+                
+            };
+
+            _db.StateHistories.AddRange(stateHistory);
+        }
+
+        public NotifyController(ILogger<NotifyController> logger, IPublishEndpoint publishEndpoint, AppDbContext db)
         {
             _logger = logger;
             _publishEndpoint = publishEndpoint;
+            _db = db;
         }
 
         [HttpGet]
         [ProducesDefaultResponseType(typeof(ApiResponse))]
-        public IActionResult Send()
+        public async Task<IActionResult> SendCommand(CommandModel command)
         {
-            _publishEndpoint.Publish(new Notify()
+            var state = new State()
             {
-                Id= Guid.NewGuid(),
-                Message = "Sending Message",
-                CreationDate = DateTime.Now,
-                //ServiceName = "NotifyMessage"
-            });
+                ClientId = command.ClientId,
+                Time = DateTime.Now,
+                Type = StateType.New
+            };
+            AddStateHistory(state);
 
-            return Ok();
+
+            var notify = new Notify()
+            {
+                Message = command.Message,
+                ClientId = command.ClientId,
+                MessageType = MessageType.Info,
+                NotifyType = NotifyType.Command,
+
+                States = new List<State>()
+                {
+                    state
+                }
+
+            };
+
+            await _publishEndpoint.Publish(notify);
+
+            state.Type = StateType.Sended;
+            AddStateHistory(state);
+
+            _db.Notifies.Add(notify);
+            await _db.SaveChangesAsync();
+
+            return Ok("Command sent");
         }
+
+
 
         [HttpPost]
         [ProducesDefaultResponseType(typeof(ApiResponse))]

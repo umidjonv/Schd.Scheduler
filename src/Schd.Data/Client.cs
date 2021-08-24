@@ -9,5 +9,9 @@ namespace Schd.Notification.Data
         public string Secret { get; set; }
 
         public string Name { get; set; }
+
+        public virtual List<State> States { get; set; } = new List<State>();
+
+        public virtual List<StateHistory> StateHistories { get; set; } = new List<StateHistory>();
     }
 }

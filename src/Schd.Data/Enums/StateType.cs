@@ -2,10 +2,10 @@
 {
     public enum StateType
     {
-        Success,
-        Info,
-        Warning,
-        Error
+        New,
+        Sended,
+        Received,
+        Completed
 
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Schd.Notification.Data.Enums;
 
 namespace Schd.Notification.Data
@@ -15,9 +16,9 @@ namespace Schd.Notification.Data
 
         public virtual Client Client { get; set; }
 
-        public Guid StateId { get; set; }
+        public virtual List<State> States { get; set; }
 
-        public virtual State State { get; set; }
+        public virtual List<StateHistory> StateHistories { get; set; }
 
     }
 }
