@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Schd.Common;
 using Schd.Notification.Data.Enums;
 
 namespace Schd.Notification.Data

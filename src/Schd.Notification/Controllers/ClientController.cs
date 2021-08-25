@@ -21,11 +21,18 @@ namespace Schd.Notification.Controllers
 
         [HttpPost]
         [ProducesDefaultResponseType(typeof(ApiResponse))]
-        public async Task<IActionResult> Add([FromBody] Client client)
+        public async Task<IActionResult> Add([FromBody] ClientModel clientModel)
         {
-            var exist = _db.Clients.Any(x => x.Secret == client.Secret);
+            var exist = _db.Clients.Any(x => x.Secret == clientModel.Secret);
             if (!exist)
             {
+                var client = new Client
+                {
+                    Secret = clientModel.Secret,
+                    Name = clientModel.Name,
+                    IsApproved = false
+                };
+
                 _db.Clients.Add(client);
                 await _db.SaveChangesAsync();
             }
@@ -55,6 +62,8 @@ namespace Schd.Notification.Controllers
             {
                 _db.Clients.Remove(client);
                 await _db.SaveChangesAsync();
+
+
 
                 return Ok("Client deleted");
             }

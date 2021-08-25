@@ -10,5 +10,7 @@ namespace Schd.Notification.Models
         public string Secret { get; set; }
 
         public string Name { get; set; }
+
+        public bool IsApproved { get; set; }
     }
 }

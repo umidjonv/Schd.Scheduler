@@ -64,6 +64,8 @@ namespace Schd.Notification.Data
                 entity.Property(e => e.Id).ValueGeneratedOnAdd();
 
                 entity.HasQueryFilter(e => !e.IsDeleted);
+
+                entity.HasOne(e => e.Client).WithMany(e => e.Notifies).HasForeignKey(e => e.ClientId);
             });
 
             modelBuilder.Entity<State>(entity =>
