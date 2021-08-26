@@ -1,13 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Schd.Common.Response;
 
 namespace Schd.Notification.Controllers
 {
     [ApiController]
+    [Produces(ApiResponseType.JsonResponse)]
     [Route("[controller]/[action]")]
     public class BaseController : ControllerBase
     {

@@ -40,6 +40,10 @@ namespace Schd.Common.Response
 
     public class ApiResponse : ApiResponse<object>
     {
-
+        
+    }
+    public struct ApiResponseType
+    {
+        public const string JsonResponse = "application/json";
     }
 }
