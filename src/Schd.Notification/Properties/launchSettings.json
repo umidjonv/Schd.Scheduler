@@ -1,9 +1,9 @@
 ﻿{
   "profiles": {
-    "Schd.Notification": {
+    "Schd.Notification.Api": {
       "commandName": "Project",
       "launchBrowser": false,
-      "applicationUrl": "http://localhost:5000",
+      "applicationUrl": "http://localhost:3001",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         

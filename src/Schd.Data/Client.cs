@@ -12,6 +12,8 @@ namespace Schd.Notification.Data
 
         public bool IsApproved { get; set; }
 
+        public string WebUrl { get; set; }
+
         public virtual List<State> States { get; set; } 
 
         public virtual List<StateHistory> StateHistories { get; set; } 
