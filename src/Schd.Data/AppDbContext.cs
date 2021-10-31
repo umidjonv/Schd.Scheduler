@@ -8,7 +8,9 @@ namespace Schd.Data
     public class AppDbContext : DbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-        { }
+        {
+            Database.EnsureCreated();
+        }
         public DbSet<AdImages> AdImages { get; set; }
         public DbSet<Ads> Ads { get; set; }
         public DbSet<Channels> Channels { get; set; }
@@ -54,6 +56,11 @@ namespace Schd.Data
         {
             ChangeTracker.DetectChanges();
             return base.SaveChanges();
+        }
+        public async Task<int> SaveChangesAsync()
+        {
+            ChangeTracker.DetectChanges();
+            return await base.SaveChangesAsync();
         }
     }
 }
