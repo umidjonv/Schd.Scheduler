@@ -88,13 +88,19 @@ namespace Schd.Data
                 e.HasOne<Owners>(s => s.Owners).WithMany(s => s.Ads).HasForeignKey(s => s.OwnerId);
             });
 
-
             builder.Entity<Channels>(e =>
             {
                 e.HasKey(a => a.Id);
                 e.Property(a => a.Id).ValueGeneratedOnAdd();
                 e.HasQueryFilter(a => !a.IsDeleted);
                 e.HasOne<Owners>(s => s.Owners).WithMany(s => s.Channels).HasForeignKey(s => s.OwnerId);
+            });
+
+            builder.Entity<Owners>(e =>
+            {
+                e.HasKey(a => a.Id);
+                e.Property(a => a.Id).ValueGeneratedOnAdd();
+                e.HasQueryFilter(a => !a.IsDeleted);
             });
 
             builder.Entity<OwnerTariff>(e=>{
@@ -104,14 +110,35 @@ namespace Schd.Data
                 e.HasOne<Owners>(s => s.Owners).WithMany(s => s.OwnerTariffs).HasForeignKey(s => s.OwnerId);
             });
 
+            builder.Entity<Schedule>(e =>
+            {
+                e.HasKey(a => a.Id);
+                e.Property(a => a.Id).ValueGeneratedOnAdd();
+                e.HasQueryFilter(a => !a.IsDeleted);
+            });
+
             builder.Entity<ScheduledAds>(e =>
             {
                 e.HasKey(a => a.Id);
                 e.Property(a => a.Id).ValueGeneratedOnAdd();
-                e.HasQueryFilter(a => !a.IsComplited);
+                e.HasQueryFilter(a => !a.IsDeleted);
                 e.HasOne<Ads>(s => s.Ads).WithMany(s => s.ScheduledAds).HasForeignKey(s => s.AdId);
                 e.HasOne<Schedule>(s => s.Schedules).WithMany(s => s.ScheduledAds).HasForeignKey(s => s.SchedulerId);
             });
+
+            builder.Entity<Statistics>(e =>
+            {
+                e.HasKey(a => a.Id);
+                e.Property(a => a.Id).ValueGeneratedOnAdd();
+            });
+
+            builder.Entity<Tariff>(e =>
+            {
+                e.HasKey(a => a.Id);
+                e.Property(a => a.Id).ValueGeneratedOnAdd();
+                e.HasQueryFilter(a => !a.IsDeleted);
+            });
+
             base.OnModelCreating(builder);
         }
         public override int SaveChanges()
