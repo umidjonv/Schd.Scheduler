@@ -1,12 +1,11 @@
+using Schd.Data.Entity.Base;
 using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Schd.Data.Entity
 {
-    public class Statistics
+    public class Statistics : BaseEntity
     {
-        [Key]
-        public long Id { get; set; }
         public DateTime RevisionDate { get; set; }
         public int Leaved { get; set; }
         public int Incomed { get; set; }

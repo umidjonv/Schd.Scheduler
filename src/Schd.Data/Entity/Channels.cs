@@ -1,14 +1,14 @@
+using Schd.Data.Entity.Base;
 using System.ComponentModel.DataAnnotations;
 
 namespace Schd.Data.Entity
 {
-    public class Channels
+    public class Channels : AuditEntity
     {
-        [Key]
-        public long Id { get; set; }
         [Required]
         [StringLength(255)]
         public string Name { get; set; }
+        [Required]
         public long OwnerId { get; set; }
         public virtual Owners Owners { get; set; }
         public string Title { get; set; }

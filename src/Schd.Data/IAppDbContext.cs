@@ -1,7 +1,11 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Schd.Data.Entity;
+using Schd.Data.Entity.Base;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Schd.Data
 {
@@ -17,6 +21,9 @@ namespace Schd.Data
         DbSet<Statistics> Statistics { get; }
         DbSet<Tariff> Tariffs { get; }
         int SaveChanges();
-        Task<int> SaveChangesAsync();
+        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+        DatabaseFacade GetDatabase();
+        void UndoingChangesDbEntityLevel(AuditEntity entity);
+        EntityEntry Entry(object entity);
     }
 }
