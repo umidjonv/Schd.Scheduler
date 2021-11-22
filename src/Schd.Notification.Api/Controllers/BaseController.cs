@@ -1,10 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Schd.Common.Response;
+﻿using Microsoft.AspNetCore.Mvc;
 using ApiResponseType = Schd.Common.Response.ApiResponseType;
 
-namespace Schd.Notification.Controllers
+namespace Schd.Notification.Api.Controllers
 {
     [ApiController]
     [Produces(ApiResponseType.JsonResponse)]

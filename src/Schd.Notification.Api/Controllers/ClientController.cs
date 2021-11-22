@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Schd.Common.Response;
+using Schd.Notification.Api.Controllers;
 using Schd.Notification.Data;
 using Schd.Notification.Models;
 

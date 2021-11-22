@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MassTransit;
 using Schd.Common.Response;
+using Schd.Notification.Api.Controllers;
 using Schd.Notification.Data;
 using Schd.Notification.Data.Enums;
 using Schd.Notification.Models;
