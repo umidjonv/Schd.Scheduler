@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Schd.Common.Response;
+using ApiResponseType = Schd.Common.Response.ApiResponseType;
 
 namespace Schd.Notification.Controllers
 {
