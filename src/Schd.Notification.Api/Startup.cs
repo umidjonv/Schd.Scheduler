@@ -27,12 +27,12 @@ namespace Schd.Notification
 
             services.AddControllers();
             var config = new AppConfig();
-
+            var dbConnection = Configuration.GetConnectionString("DefaultConnection");
             Configuration.GetSection("Configuration").Bind(config);
 
             services.AddLogging();
 
-            services.AddDbContext<IAppDbContext, AppDbContext>(options=>options.UseNpgsql(config.DbConnection));
+            services.AddDbContext<IAppDbContext, AppDbContext>(options=>options.UseNpgsql(dbConnection));
 
             services.AddMassTransit(x =>
             {
