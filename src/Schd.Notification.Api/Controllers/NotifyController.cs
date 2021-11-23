@@ -6,9 +6,12 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using MassTransit;
+using MassTransit.Initializers.PropertyProviders;
 using Schd.Common.Response;
 using Schd.Notification.Api.Controllers;
+using Schd.Notification.Api.Services;
 using Schd.Notification.Data;
+using Schd.Notification.Data.Domain;
 using Schd.Notification.Data.Enums;
 using Schd.Notification.Models;
 
@@ -20,6 +23,7 @@ namespace Schd.Notification.Controllers
         private readonly ILogger<NotifyController> _logger;
         private readonly IPublishEndpoint _publishEndpoint;
         private readonly AppDbContext _db;
+        private readonly CommandService _commandService;
 
         private void AddStateHistory(State state)
         {
@@ -34,17 +38,22 @@ namespace Schd.Notification.Controllers
             _db.StateHistories.AddRange(stateHistory);
         }
 
-        public NotifyController(ILogger<NotifyController> logger, IPublishEndpoint publishEndpoint, AppDbContext db)
+        public NotifyController(ILogger<NotifyController> logger, IPublishEndpoint publishEndpoint, AppDbContext db, CommandService commandService)
         {
             _logger = logger;
             _publishEndpoint = publishEndpoint;
             _db = db;
+            _commandService = commandService;
         }
 
         [HttpGet]
         [ProducesDefaultResponseType(typeof(ApiResponse))]
-        public async Task<IActionResult> SendCommand(CommandModel command)
+        public async Task<IActionResult> SendCommand([FromBody]Command command)
         {
+            if (command == null)
+            {
+            }
+
             var state = new State()
             {
                 ClientId = command.ClientId,
@@ -54,26 +63,14 @@ namespace Schd.Notification.Controllers
             AddStateHistory(state);
 
 
-            var notify = new Notify()
-            {
-                Message = command.Message,
-                ClientId = command.ClientId,
-                MessageType = MessageType.Info,
-                NotifyType = NotifyType.Command,
-
-                States = new List<State>()
-                {
-                    state
-                }
-
-            };
+            
 
             await _publishEndpoint.Publish(notify);
 
             state.Type = StateType.Sended;
             AddStateHistory(state);
 
-            _db.Notifies.Add(notify);
+            _db.Commands.Add();
             await _db.SaveChangesAsync();
 
             return Ok("Command sent");

@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using Schd.Common;
+using Schd.Notification.Data.Domain;
 using Schd.Notification.Data.Enums;
 
 namespace Schd.Notification.Data
 {
-    public class Notify:BaseEntity
+    [Table("logs")]
+    public class Log : BaseEntity, INotify
     {
         public string Message { get; set; }
 
-        public MessageType MessageType { get; set; }
-
-        public NotifyType NotifyType { get; set; }
+        public LoggingType Type { get; set; }
 
         public Guid ClientId { get; set; }
 

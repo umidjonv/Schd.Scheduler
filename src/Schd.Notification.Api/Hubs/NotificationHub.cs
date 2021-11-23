@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
 
-namespace Schd.Notification.Api.Models.Notification
+namespace Schd.Notification.Api.Hubs
 {
-    public interface IMessage
+    public class NotificationHub:Hub
     {
-
     }
 }

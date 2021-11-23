@@ -10,7 +10,10 @@ namespace Schd.Notification.Data
 {
     public class AppDbContext: DbContext, IAppDbContext
     {
-        public DbSet<Notify> Notifies { get; set; }
+        public DbSet<Log> Logs { get; set; }
+        
+        public DbSet<Command> Commands { get; set; }
+
         public DbSet<Client> Clients { get; set; }
         public DbSet<State> States { get; set; }
         public DbSet<StateHistory> StateHistories { get; set; }

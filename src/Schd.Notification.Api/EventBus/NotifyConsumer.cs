@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using Schd.Notification.Data;
+using Schd.Notification.Data.Domain;
 
 namespace Schd.Notification.Models.EventBus
 {
-    public class NotifyConsumer : IConsumer<Notify>
+    public class NotifyConsumer : IConsumer<NotifyEvent>
     {
         ILogger<NotifyConsumer> _logger;
 
@@ -17,7 +18,7 @@ namespace Schd.Notification.Models.EventBus
             _logger = logger;
         }
 
-        public async Task Consume(ConsumeContext<Notify> context)
+        public async Task Consume(ConsumeContext<NotifyEvent> context)
         {
             _logger.LogInformation("Value: {Value}", context.Message);
         }
