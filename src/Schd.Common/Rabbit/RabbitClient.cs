@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
-using SP.Common.Helpers;
+
 
 namespace Trading.RabbitMQ.Core
 {
@@ -32,7 +32,7 @@ namespace Trading.RabbitMQ.Core
 
         public static async Task CreateVHosts(string host, string user, string password, params string[] names)
         {
-            using var client = new HttpClient(NetworkHelper.ConfigureClientHandler());
+            using var client = new HttpClient();
 
             var model = new
             {

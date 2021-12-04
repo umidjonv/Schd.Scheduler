@@ -31,7 +31,6 @@ namespace Schd.Notification
             Configuration.GetSection("Configuration").Bind(config);
 
             services.AddLogging();
-
             services.AddDbContext<IAppDbContext, AppDbContext>(options=>options.UseNpgsql(dbConnection));
 
             services.AddMassTransit(x =>
