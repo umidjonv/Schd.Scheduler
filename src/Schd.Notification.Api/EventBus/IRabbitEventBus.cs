@@ -9,14 +9,11 @@ using Schd.Notification.Api.EventBus.Providers;
 
 namespace Schd.Notification.EventBus
 {
-    public interface IEventBus<T> where T: class
+    public interface IRabbitEventBus<T> where T :class
     {
-        IProvider Provider { get; set; }
-
         public IConsumer<T> Consumer { get; set; }
 
         public IPublisher<T> Publisher { get; set; }
 
-        
     }
 }

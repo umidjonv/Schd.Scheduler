@@ -38,6 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="EventBus\Enums\" />
     <Folder Include="Repositories\" />
   </ItemGroup>
 

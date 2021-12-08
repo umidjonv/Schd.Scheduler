@@ -17,4 +17,8 @@
     <ProjectReference Include="..\Schd.Common\Schd.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Domain\" />
+  </ItemGroup>
+
 </Project>
