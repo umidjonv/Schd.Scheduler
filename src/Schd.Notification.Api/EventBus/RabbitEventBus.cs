@@ -16,8 +16,7 @@ namespace Schd.Notification.EventBus
     public class RabbitEventBus : IRabbitEventBus<NotifyEvent>, IConsumer<NotifyEvent>, IPublisher<NotifyEvent>
     {
         private readonly IRabbitProvider _provider;
-
-
+        
         public RabbitEventBus(IRabbitProvider provider)
         {
             _provider = provider;
@@ -42,8 +41,16 @@ namespace Schd.Notification.EventBus
             _provider.Bind(exchange, queueName, route);
         }
 
-        public void Consume()
+        public void Consume(string clientId, NotificationType type)
         {
+            var consumer = _provider.Consume($"queue_{type}_{clientId}");
+            
+            //consumer. += async (data, eventArgs) =>
+            //{
+            //    var body = eventArgs.Body.ToArray();
+
+            //    await Task.Yield();
+            //};
 
         }
 
