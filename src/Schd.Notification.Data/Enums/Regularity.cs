@@ -6,6 +6,6 @@ namespace Schd.Data.Enums
          Weekends,
          Weekdays,
          Everyday,
-        Custome
+         Custom
     }
 }
