@@ -10,6 +10,6 @@ namespace Schd.Data.Entity
         public string Name { get; set; }
         [Required]
         public double Price { get; set; }
-        //public long CurrencyId { get; set; } // Думаю лучше сделать только на одну валюту в долларах
+        public long CurrencyId { get; set; }
     }
 }
