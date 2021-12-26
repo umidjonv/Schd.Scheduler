@@ -11,7 +11,7 @@ namespace Schd.Data.Entity
         public virtual Ads Ads { get; set; }
         [Required]
         public long SchedulerId { get; set; }
-        public virtual Schedule Schedules { get; set; }
+        public virtual ScheduleTemplates ScheduleTemplates { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
         public bool IsComplited { get; set; }

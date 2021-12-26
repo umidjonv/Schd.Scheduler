@@ -67,7 +67,7 @@ namespace Schd.Data
         public DbSet<Owners> Owners { get; set; }
         public DbSet<OwnerTariff> OwnerTariffs { get; set; }
         public DbSet<ScheduledAds> ScheduledAds { get; set; }
-        public DbSet<Schedule> Schedules { get; set; }
+        public DbSet<ScheduleTemplates> ScheduleTemplates { get; set; }
         public DbSet<Statistics> Statistics { get; set; }
         public DbSet<Tariff> Tariffs { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
@@ -110,7 +110,7 @@ namespace Schd.Data
                 e.HasOne<Owners>(s => s.Owners).WithMany(s => s.OwnerTariffs).HasForeignKey(s => s.OwnerId);
             });
 
-            builder.Entity<Schedule>(e =>
+            builder.Entity<ScheduleTemplates>(e =>
             {
                 e.HasKey(a => a.Id);
                 e.Property(a => a.Id).ValueGeneratedOnAdd();
@@ -123,7 +123,7 @@ namespace Schd.Data
                 e.Property(a => a.Id).ValueGeneratedOnAdd();
                 e.HasQueryFilter(a => !a.IsDeleted);
                 e.HasOne<Ads>(s => s.Ads).WithMany(s => s.ScheduledAds).HasForeignKey(s => s.AdId);
-                e.HasOne<Schedule>(s => s.Schedules).WithMany(s => s.ScheduledAds).HasForeignKey(s => s.SchedulerId);
+                e.HasOne<ScheduleTemplates>(s => s.ScheduleTemplates).WithMany(s => s.ScheduledAds).HasForeignKey(s => s.SchedulerId);
             });
 
             builder.Entity<Statistics>(e =>

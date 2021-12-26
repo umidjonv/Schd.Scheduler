@@ -361,4 +361,8 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+<<<<<<< HEAD
+.DS_Store
+=======
 /src/Schd.Notification.UI
+>>>>>>> 5fa4244d570d87424e0c47ce36eba9dc5ff2bb3f
