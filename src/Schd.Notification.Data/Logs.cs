@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using Schd.Common;
-using Schd.Notification.Data.Domain;
 using Schd.Notification.Data.Enums;
 
 namespace Schd.Notification.Data
 {
     [Table("logs")]
-    public class Log : BaseEntity, INotify
+    public class Log : BaseEntity
     {
         public string Message { get; set; }
 

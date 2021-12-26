@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,21 +12,24 @@ using Microsoft.OpenApi.Extensions;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Schd.Common.Helpers;
+using Schd.Notification.Api.EventBus.Abstractions;
+using Schd.Notification.Api.EventBus.Models;
 using Schd.Notification.Data.Enums;
 
 namespace Schd.Notification.Api.EventBus.Providers
 {
-    public class RabbitProvider:IRabbitProvider
+    public class RabbitProvider:IProvider
     {
-        private readonly string _exchangeName;
-        private readonly string _routeKey;
-
+        
         public IModel Channel { get; set; }
-
-        public RabbitProvider(string exchangeName, string routeKey)
+        private IConnection _connection;
+        public RabbitProvider()
         {
-            _exchangeName = exchangeName;
-            _routeKey = routeKey;
+        }
+        
+        public RabbitProvider(string host, string user, string password, string vhost = "default_host")
+        {
+            _ = this.Connect(host, user, password,  vhost);
         }
 
         public async Task<bool> Connect(string connection)
@@ -42,7 +46,7 @@ namespace Schd.Notification.Api.EventBus.Providers
             return true;
         }
 
-        public async Task<bool> Connect(string connection, string user, string password, string host, string vhost = "default_host")
+        public async Task<bool> Connect(string host, string user, string password,  string vhost = "default_host")
         {
             var authToken = Encoding.ASCII.GetBytes($"{user}:{password}");
 
@@ -61,6 +65,15 @@ namespace Schd.Notification.Api.EventBus.Providers
                 throw new Exception(response.ReasonPhrase);
             }
 
+            var factory = new ConnectionFactory()
+            {
+                HostName = host,
+                VirtualHost = vhost,
+                UserName = user,
+                Password = password
+            };
+            _connection = factory.CreateConnection(host);
+
             return true;
         }
 
@@ -77,19 +90,15 @@ namespace Schd.Notification.Api.EventBus.Providers
             return true;
         }
 
-        public void CreateChannel(string host, string vhost, string user, string password)
+        public void CreateChannel()
         {
-            var factory = new ConnectionFactory()
+            if (_connection.IsOpen)
             {
-                HostName = host,
-                VirtualHost = vhost,
-                UserName = user,
-                Password = password
-            };
-            var connection = factory.CreateConnection(host);
-            var channel = connection.CreateModel();
+                var channel = _connection.CreateModel();
+
+                Channel = channel;
+            }
             
-            Channel = channel;
             
         }
 
@@ -109,19 +118,10 @@ namespace Schd.Notification.Api.EventBus.Providers
             Channel.QueueBind(queue, exchangeName, route);
         }
 
-        public AsyncDefaultBasicConsumer Consume(string queue)
-        {
-            var consumer = new AsyncEventingBasicConsumer(Channel);
-            
-            Channel.BasicConsume(queue, false, consumer);
-            
-            return consumer;
-        }
-
         public void Publish(string exchangeName, object data, string route)
         {
             byte[] messageBodyBytes = data.ObjectToBytes();
-            
+
             //IBasicProperties props = Channel.CreateBasicProperties();
             //props.ContentType = "text/plain";
             //props.DeliveryMode = 2;
@@ -130,6 +130,7 @@ namespace Schd.Notification.Api.EventBus.Providers
             Channel.BasicPublish(exchangeName, route, null, messageBodyBytes);
         }
 
-        
+
+
     }
 }

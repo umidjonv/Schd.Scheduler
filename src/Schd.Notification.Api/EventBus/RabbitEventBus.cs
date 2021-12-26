@@ -6,20 +6,26 @@ using System.Threading.Tasks;
 using Microsoft.OpenApi.Extensions;
 using Schd.Notification.Api.EventBus;
 using Schd.Notification.Api.EventBus.Consts;
+using Schd.Notification.Api.EventBus.Models;
 using Schd.Notification.Api.EventBus.Providers;
-using Schd.Notification.Data.Domain;
 using Schd.Notification.Data.Enums;
+using Schd.Notification.Api.EventBus.Abstractions;
+using RabbitMQ.Client.Events;
+using Schd.Common.Helpers;
+using RabbitMQ.Client;
 
 namespace Schd.Notification.EventBus
 {
     
-    public class RabbitEventBus : IRabbitEventBus<NotifyEvent>, IConsumer<NotifyEvent>, IPublisher<NotifyEvent>
+    public class RabbitEventBus : IRabbitEventBus<NotifyEvent>
     {
-        private readonly IRabbitProvider _provider;
-        
-        public RabbitEventBus(IRabbitProvider provider)
+        private readonly RabbitProvider _provider;
+        private readonly EventBusManager _eventBusManager;
+
+        public RabbitEventBus(RabbitProvider provider, EventBusManager eventBusManager)
         {
             _provider = provider;
+            _eventBusManager = eventBusManager;
         }
         
         public IConsumer<NotifyEvent> Consumer { get; set; }
@@ -41,16 +47,29 @@ namespace Schd.Notification.EventBus
             _provider.Bind(exchange, queueName, route);
         }
 
-        public void Consume(string clientId, NotificationType type)
+        public void Consume<T, TH>(string serviceName) where T : INotifyEvent
+            where TH : IIntegrationEventHandler<T>
         {
-            var consumer = _provider.Consume($"queue_{type}_{clientId}");
-            
-            //consumer. += async (data, eventArgs) =>
-            //{
-            //    var body = eventArgs.Body.ToArray();
+            var consumer = new AsyncEventingBasicConsumer(_provider.Channel);
 
-            //    await Task.Yield();
-            //};
+            consumer.Received += async (data, eventArgs) =>
+            {
+                var body = eventArgs.Body.ToArray();
+
+                var @event = body.Deserialize<INotifyEvent>();
+
+                if (_eventBusManager.HasSubscribed(serviceName))
+                {
+                    var handler = _eventBusManager.GetSubscriber(serviceName, typeof(TH));
+
+                    await handler.Handle(@event, serviceName);
+                    
+                }
+
+
+            };
+
+            _provider.Channel.BasicConsume(serviceName, false, consumer);
 
         }
 
@@ -59,11 +78,6 @@ namespace Schd.Notification.EventBus
             _provider.Publish(model.Type.GetDisplayName(), model, model.Type.GetDisplayName());
             
         }
-
-        public void Consume(NotifyEvent model)
-        {
-            
-            
-        }
+        
     }
 }

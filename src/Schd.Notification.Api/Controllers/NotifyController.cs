@@ -11,7 +11,6 @@ using Schd.Common.Response;
 using Schd.Notification.Api.Controllers;
 using Schd.Notification.Api.Services;
 using Schd.Notification.Data;
-using Schd.Notification.Data.Domain;
 using Schd.Notification.Data.Enums;
 using Schd.Notification.Models;
 
@@ -30,7 +29,7 @@ namespace Schd.Notification.Controllers
             var stateHistory = new StateHistory
             {
                 ClientId = state.ClientId,
-                NotifyId = state.NotifyId,
+                EventId = state.EventId,
                 Type = state.Type
                 
             };
@@ -65,12 +64,12 @@ namespace Schd.Notification.Controllers
 
             
 
-            await _publishEndpoint.Publish(notify);
+            //await _publishEndpoint.Publish(notify);
 
             state.Type = StateType.Sended;
             AddStateHistory(state);
 
-            _db.Commands.Add();
+            //_db.Commands.Add();
             await _db.SaveChangesAsync();
 
             return Ok("Command sent");

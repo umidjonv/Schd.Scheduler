@@ -1,31 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using RabbitMQ.Client;
 using Schd.Common;
 using Schd.Notification.Api.Consts;
+using Schd.Notification.Api.EventBus.Providers;
+using Schd.Notification.EventBus;
 using Trading.RabbitMQ.Core;
 
 namespace Schd.Notification.Api.Services
 {
-    public class RabbitService
+    public class RabbitService :IHostedService
     {
-        private IConnection _rabbitConnection;
+        private RabbitProvider rabbitProvider; 
         private IModel _channel;
-
-        public RabbitService(string username, string password, string vhost, string hostName)
+        private readonly IServiceProvider _services;
+        private RabbitEventBus rabbitEventBus;
+        public RabbitService(IServiceProvider services)
         {
+            _services = services;
+        }
 
-            ConnectionFactory factory = new ConnectionFactory();
-            factory.UserName = username;
-            factory.Password = password;
-            factory.VirtualHost = vhost;
-            factory.HostName = hostName;
+        public Task StartAsync(CancellationToken cancellationToken)
+        {
+            rabbitProvider = _services.GetRequiredService<RabbitProvider>();
+            rabbitEventBus = _services.GetRequiredService<RabbitEventBus>();
 
-            _rabbitConnection = factory.CreateConnection();
+            
+            
+            return Task.CompletedTask;
+        }
 
-            _channel = _rabbitConnection.CreateModel();
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
 
         private void CreatingExchanges()

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Schd.Notification.Data.Domain;
 using Schd.Notification.Data.Enums;
 
 namespace Schd.Notification.Data
@@ -15,10 +14,9 @@ namespace Schd.Notification.Data
 
         public Client Client { get; set; }
 
-        public Guid NotifyId { get; set; }
-        
+        public Guid EventId { get; set; }
 
+        public virtual Event Event  { get; set; }
         
-
     }
 }

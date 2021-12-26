@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Schd.Notification.Data.Enums;
 
-namespace Schd.Notification.Data.Domain
+namespace Schd.Notification.Api.EventBus.Models
 {
-    public class NotifyEvent
+    public class NotifyEvent:INotifyEvent
     {
         public Guid Id { get; set; } = new Guid();
 
@@ -14,8 +12,6 @@ namespace Schd.Notification.Data.Domain
         public NotificationType Type { get; set; }
 
         public StateType State { get; set; }
-
-        public INotify Notify { get; set; }
 
     }
 }

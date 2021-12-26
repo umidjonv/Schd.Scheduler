@@ -12,7 +12,7 @@ namespace Schd.Notification.Models
 
         public string Message { get; set; }
 
-        public MessageType Type { get; set; }
+        ///public MessageType Type { get; set; }
 
         public Guid ClientId { get; set; }
         

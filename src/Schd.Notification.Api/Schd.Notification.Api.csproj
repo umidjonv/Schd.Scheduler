@@ -34,6 +34,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Schd.Common\Schd.Common.csproj" />
+    <ProjectReference Include="..\Schd.EventBus\Schd.EventBus.csproj" />
     <ProjectReference Include="..\Schd.Notification.Data\Schd.Notification.Data.csproj" />
   </ItemGroup>
 
