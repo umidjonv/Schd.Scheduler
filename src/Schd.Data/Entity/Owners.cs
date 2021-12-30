@@ -1,9 +1,11 @@
 using Schd.Data.Entity.Base;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Schd.Data.Entity
 {
+    [Table("OWNERS")]
     public class Owners : AuditEntity
     {
         [Required]

@@ -17,7 +17,7 @@ namespace Schd.Data
         DbSet<Owners> Owners { get; }
         DbSet<OwnerTariff> OwnerTariffs { get; }
         DbSet<ScheduledAds> ScheduledAds { get; }
-        DbSet<ScheduleTemplates> Schedules { get; }
+        DbSet<ScheduleTemplates> ScheduleTemplates { get; }
         DbSet<Statistics> Statistics { get; }
         DbSet<Tariff> Tariffs { get; }
         int SaveChanges();
