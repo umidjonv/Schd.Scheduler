@@ -9,6 +9,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.OpenApi.Extensions;
+using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Schd.Common.Helpers;
@@ -27,7 +28,7 @@ namespace Schd.Notification.Api.EventBus.Providers
         {
         }
         
-        public RabbitProvider(string host, string user, string password, string vhost = "default_host")
+        public RabbitProvider(string host, string user, string password, string vhost = "/")
         {
             _ = this.Connect(host, user, password,  vhost);
         }
@@ -46,34 +47,43 @@ namespace Schd.Notification.Api.EventBus.Providers
             return true;
         }
 
-        public async Task<bool> Connect(string host, string user, string password,  string vhost = "default_host")
+        public async Task<bool> Connect(string host, string user, string password,  string vhost = "/")
         {
             var authToken = Encoding.ASCII.GetBytes($"{user}:{password}");
 
-            using var client = new HttpClient()
+            try
             {
-                DefaultRequestHeaders =
+
+                //using var client = new HttpClient()
+                //{
+                //    DefaultRequestHeaders =
+                //{
+                //    Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(authToken))
+                //}
+                //};
+
+                //var response = await client.PutAsync($"http://{host}:15672/api/vhosts/{vhost}", null);
+
+                //if (!response.IsSuccessStatusCode)
+                //{
+                //    throw new Exception(response.ReasonPhrase);
+                //}
+
+                var factory = new ConnectionFactory()
                 {
-                    Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(authToken))
-                }
-            };
-
-            var response = await client.PutAsync($"http://{host}:15672/api/vhosts/{vhost}", null);
-
-            if (!response.IsSuccessStatusCode)
+                    HostName = host,
+                    VirtualHost = vhost,
+                    UserName = user,
+                    Password = password
+                };
+                _connection = factory.CreateConnection(host);
+            }
+            catch (Exception ex)
             {
-                throw new Exception(response.ReasonPhrase);
+                Console.WriteLine($"{ex.Message}");                
             }
 
-            var factory = new ConnectionFactory()
-            {
-                HostName = host,
-                VirtualHost = vhost,
-                UserName = user,
-                Password = password
-            };
-            _connection = factory.CreateConnection(host);
-
+            CreateChannel();
             return true;
         }
 
@@ -104,7 +114,10 @@ namespace Schd.Notification.Api.EventBus.Providers
 
         public void DeclareExchange(string exchange)
         {
-            Channel.ExchangeDeclare(exchange, ExchangeType.Direct);
+            if (Channel != null && _connection.IsOpen)
+                Channel.ExchangeDeclare(exchange, ExchangeType.Direct);
+            else
+                throw new Exception("Not connected");
         }
 
 
@@ -120,7 +133,7 @@ namespace Schd.Notification.Api.EventBus.Providers
 
         public void Publish(string exchangeName, object data, string route)
         {
-            byte[] messageBodyBytes = data.ObjectToBytes();
+            byte[] messageBodyBytes = JsonConvert.SerializeObject(data).ObjectToBytes();
 
             //IBasicProperties props = Channel.CreateBasicProperties();
             //props.ContentType = "text/plain";

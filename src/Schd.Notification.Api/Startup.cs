@@ -4,11 +4,9 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using MassTransit;
 using Schd.Common;
 using Schd.Notification.Data;
 using Microsoft.EntityFrameworkCore;
-using Schd.Notification.Api.EventBus.Models;
 using Schd.Notification.Api.EventBus.Abstractions;
 using Schd.Notification.Api.Infrastructure;
 using Schd.Notification.Api.EventBus.Providers;
@@ -17,11 +15,14 @@ using Schd.Notification.EventBus;
 using System.Collections.Generic;
 using Schd.Notification.Api.Services;
 using System;
+using Schd.Notification.Api.Infrastructure.Hubs;
 
 namespace Schd.Notification
 {
     public class Startup
     {
+
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -31,32 +32,35 @@ namespace Schd.Notification
 
         public void ConfigureEventBus(IServiceCollection services, AppConfig config)
         {
-            var client = new AppService();
-            Configuration.GetSection("AppService").Bind(client);
-            services.AddSingleton(client);
-
-            services.AddSingleton<IIntegrationEventHandler, LogNotificationHandler>();
-            services.AddSingleton<IIntegrationEventHandler, MessageNotificationHandler>();
-            services.AddSingleton<IIntegrationEventHandler, CommandNotificationHandler>();
             
+            //services.AddSingleton(client);
+
+            services.AddSingleton<LogNotificationHandler>();
+            services.AddSingleton<MessageNotificationHandler>();
+            services.AddSingleton<CommandNotificationHandler>();
+
+            
+
             services.AddSingleton<EventBusManager>();
 
-            services.AddScoped(services=>new RegistrationService(client, 
-                new List<IIntegrationEventHandler> 
-                {
-                    services.GetService<LogNotificationHandler>(),
-                    services.GetService<MessageNotificationHandler>(),
-                    services.GetService<CommandNotificationHandler>()
-                }
-                ));
-
             var rabbitProvider = new RabbitProvider(config.RabbitConnection, config.RabbitUsername, config.RabbitPassword);
-
             services.AddSingleton(rabbitProvider);
 
-            //var rabbitEventBus = new RabbitEventBus();
             services.AddSingleton<RabbitEventBus>();
+
             
+
+            services.AddHostedService<RegistrationService>();
+
+            services.AddCors(options =>
+            {
+
+                options.AddPolicy("AllowAll", builder => builder.SetIsOriginAllowed(a => true).AllowAnyMethod().AllowAnyHeader().AllowCredentials());
+            });
+
+            //var rabbitEventBus = new RabbitEventBus();
+
+
 
         }
 
@@ -71,9 +75,9 @@ namespace Schd.Notification
             services.AddLogging();
             services.AddDbContext<IAppDbContext, AppDbContext>(options=>options.UseNpgsql(dbConnection));
 
-            services.AddMassTransitHostedService();
+            ConfigureEventBus(services, config);
 
-
+            services.AddSignalR();
             services.AddSwaggerGen();
             
         }
@@ -98,10 +102,13 @@ namespace Schd.Notification
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "NotifyMessage API V1");
                 c.RoutePrefix = string.Empty;
             });
-
+            app.UseCors("AllowAll");
             app.UseRouting();
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHub<LogHub>("/hub/log");
+                endpoints.MapHub<MessageHub>("/hub/message");
+                endpoints.MapHub<CommandHub>("/hub/command");
                 endpoints.MapControllers();
             });
             

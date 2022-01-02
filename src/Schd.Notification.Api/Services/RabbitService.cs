@@ -29,7 +29,7 @@ namespace Schd.Notification.Api.Services
         {
             rabbitProvider = _services.GetRequiredService<RabbitProvider>();
             rabbitEventBus = _services.GetRequiredService<RabbitEventBus>();
-
+            
             
             
             return Task.CompletedTask;

@@ -7,11 +7,12 @@ namespace Schd.Notification.Api.EventBus.Models
     {
         public Guid Id { get; set; } = new Guid();
 
-        public Guid NotifyId { get; set; }
+        public Guid ServiceId { get; set; }
 
         public NotificationType Type { get; set; }
 
         public StateType State { get; set; }
 
+        public string Message { get; set; }
     }
 }

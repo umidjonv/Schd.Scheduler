@@ -16,7 +16,7 @@ using RabbitMQ.Client;
 
 namespace Schd.Notification.EventBus
 {
-    
+
     public class RabbitEventBus : IRabbitEventBus<NotifyEvent>
     {
         private readonly RabbitProvider _provider;
@@ -27,22 +27,27 @@ namespace Schd.Notification.EventBus
             _provider = provider;
             _eventBusManager = eventBusManager;
         }
-        
+
         public IConsumer<NotifyEvent> Consumer { get; set; }
         public IPublisher<NotifyEvent> Publisher { get; set; }
 
-        private void CreateChannel(NotificationType type)
+        public void DeclareExchange(NotificationType type) 
         {
-            _provider.DeclareExchange($"exchange_{type.GetDisplayName()}");
-            //_provider.Bind(Constants.LOG_QUEUE, NotificationType.Log.GetDisplayName());
+            if (_provider.Channel == null)
+                _provider.CreateChannel();
+
+            if (_provider.Channel != null)
+                _provider.DeclareExchange($"exchange_{type.GetDisplayName()}");
         }
 
-        
-        public void CreateQueue(string clientId, NotificationType type)
+
+        public void CreateQueue(string serviceName, NotificationType type)
         {
-            var queueName = $"queue_{type}_{clientId}";
-            var route = $"{clientId}_{type}";
-            var exchange = $"exchange_{type.GetDisplayName()}";
+            
+            
+            var queueName = GetQueueName(serviceName, type);
+            var route = GetRouteName(serviceName, type); ;
+            var exchange = GetExchangeName(type);
             _provider.QueueDeclare(queueName);
             _provider.Bind(exchange, queueName, route);
         }
@@ -51,33 +56,49 @@ namespace Schd.Notification.EventBus
             where TH : IIntegrationEventHandler<T>
         {
             var consumer = new AsyncEventingBasicConsumer(_provider.Channel);
-
-            consumer.Received += async (data, eventArgs) =>
+            if (_eventBusManager.HasSubscribed(serviceName))
             {
-                var body = eventArgs.Body.ToArray();
+                var handler = _eventBusManager.GetSubscriber<T>(serviceName, typeof(TH));
 
-                var @event = body.Deserialize<INotifyEvent>();
-
-                if (_eventBusManager.HasSubscribed(serviceName))
+                consumer.Received += async (data, eventArgs) =>
                 {
-                    var handler = _eventBusManager.GetSubscriber(serviceName, typeof(TH));
+                    var body = eventArgs.Body.ToArray();
 
+                    var @event = body.Deserialize<T>();
+
+                    //if(handler)
                     await handler.Handle(@event, serviceName);
-                    
-                }
 
 
-            };
 
-            _provider.Channel.BasicConsume(serviceName, false, consumer);
+
+                };
+
+                _provider.Channel.BasicConsume(GetQueueName(serviceName, handler.GetNotificationType()), false, consumer);
+            }
+
+            
 
         }
 
         public void Publish(NotifyEvent model)
         {
-            _provider.Publish(model.Type.GetDisplayName(), model, model.Type.GetDisplayName());
-            
+            _provider.Publish(GetExchangeName(model.Type), model, GetRouteName(model.ServiceId.ToString(), model.Type));
+
         }
-        
+
+        private string GetQueueName(string serviceName, NotificationType type)
+        {
+            return $"queue_{type}_{serviceName}";
+        }
+
+        private string GetRouteName(string serviceName, NotificationType type) => $"{serviceName}_{type}";
+
+        private string GetExchangeName(NotificationType type) => $"exchange_{type}";
+        private NotificationType GetNotificationType(IIntegrationEventHandler<INotifyEvent> handler)
+        {
+            return handler.GetNotificationType();
+        }
+
     }
 }

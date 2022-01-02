@@ -3,23 +3,28 @@ using Schd.Notification.Api.EventBus.Models;
 using Schd.Notification.Data.Enums;
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
+using Schd.Notification.Api.Infrastructure.Hubs;
 
 namespace Schd.Notification.Api.Infrastructure
 {
     public class CommandNotificationHandler: IIntegrationEventHandler<NotifyEvent>
     {
-        public CommandNotificationHandler()
+        private readonly IHubContext<CommandHub> _commandHub;
+
+        public CommandNotificationHandler(IHubContext<CommandHub> commandHub)
         {
+            _commandHub = commandHub;
         }
 
         public NotificationType GetNotificationType()
         {
-            throw new NotImplementedException();
+            return NotificationType.Command;
         }
 
-        public Task Handle(NotifyEvent @event, string serviceName)
+        public async Task Handle(NotifyEvent @event, string serviceName)
         {
-            throw new System.NotImplementedException();
+            await _commandHub.Clients.All.SendAsync($"{NotificationType.Command}_{serviceName}", @event.Message);
         }
 
         

@@ -24,7 +24,7 @@ namespace Schd.Notification.Api.Infrastructure
 
         public NotificationType GetNotificationType()
         {
-            throw new NotImplementedException();
+            return NotificationType.Message;
         }
     }
 }

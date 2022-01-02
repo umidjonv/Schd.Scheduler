@@ -19,7 +19,7 @@ namespace Schd.Notification.Api.Infrastructure
 
         public NotificationType GetNotificationType()
         {
-            throw new NotImplementedException();
+            return NotificationType.Log;
         }
 
         public async Task Handle(NotifyEvent @event, string serviceName)
