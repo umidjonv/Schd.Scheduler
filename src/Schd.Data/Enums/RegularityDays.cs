@@ -7,8 +7,9 @@ namespace Schd.Data.Enums
     public enum RegularityDays
     {
         OneTime,
-        Weeends,
+        Weekends,
         Weekdays,
-        Custom
+        Custom,
+        EveryDay
     }
 }

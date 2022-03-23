@@ -20,6 +20,7 @@ namespace Schd.Data
         DbSet<ScheduleTemplates> ScheduleTemplates { get; }
         DbSet<Statistics> Statistics { get; }
         DbSet<Tariff> Tariffs { get; }
+        DbSet<QueuedSchedules> QueuedSchedules {get; }
         int SaveChanges();
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
         DatabaseFacade GetDatabase();

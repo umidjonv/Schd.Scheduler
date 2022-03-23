@@ -17,5 +17,6 @@ namespace Schd.Data.Entity
         public string[] CustomTimes { get; set; }
         public bool Enabled { get; set; }
         public ICollection<ScheduledAds> ScheduledAds { get; set; }
+        public ICollection<QueuedSchedules> QueuedSchedules {get;set;}
     }
 }

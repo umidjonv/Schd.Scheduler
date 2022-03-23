@@ -19,6 +19,7 @@ namespace Schd.Data
         public AppDbContext(DbContextOptions<AppDbContext> options, IHttpContextAccessor httpContext) : base(options)
         {
             _httpContext = httpContext;
+            Database.EnsureCreated();
             ChangeTracker.LazyLoadingEnabled = true;
         }
         private void AuditValues()
@@ -33,27 +34,27 @@ namespace Schd.Data
             }
             //ip
             var userIp = _httpContext?.HttpContext?.Connection?.RemoteIpAddress?.ToString();
-            if(string.IsNullOrWhiteSpace(userIp))
+            if (string.IsNullOrWhiteSpace(userIp))
             {
                 var host = Dns.GetHostEntry(Dns.GetHostName());
                 userIp = host.AddressList
                     .FirstOrDefault(a => a.AddressFamily == AddressFamily.InterNetwork)?.ToString() ?? "::1";
             }
 
-            foreach(var entry in entries)
+            foreach (var entry in entries)
             {
                 ((AuditEntity)entry.Entity).ModifiedDate = DateTime.Now;
                 ((AuditEntity)entry.Entity).ModifiedIp = userIp;
                 ((AuditEntity)entry.Entity).ModifiedBy = userName;
 
-                if(entry.State == EntityState.Added)
+                if (entry.State == EntityState.Added)
                 {
                     ((AuditEntity)entry.Entity).CreatedDate = DateTime.Now;
                     ((AuditEntity)entry.Entity).CreatedIp = userIp;
                     ((AuditEntity)entry.Entity).CreatedBy = userName;
                 }
 
-                if(entry.State == EntityState.Deleted)
+                if (entry.State == EntityState.Deleted)
                 {
                     ((AuditEntity)entry.Entity).IsDeleted = true;
                     entry.State = EntityState.Modified;
@@ -70,6 +71,7 @@ namespace Schd.Data
         public DbSet<ScheduleTemplates> ScheduleTemplates { get; set; }
         public DbSet<Statistics> Statistics { get; set; }
         public DbSet<Tariff> Tariffs { get; set; }
+        public DbSet<QueuedSchedules> QueuedSchedules { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<AdImages>(e =>
@@ -77,7 +79,7 @@ namespace Schd.Data
                 e.HasKey(a => a.Id);
                 e.Property(a => a.Id).ValueGeneratedOnAdd();
                 e.HasQueryFilter(a => !a.IsDeleted);
-                e.HasOne<Ads>(s=>s.Ads).WithMany(s => s.AdImages).HasForeignKey(s => s.AdId);
+                e.HasOne<Ads>(s => s.Ads).WithMany(s => s.AdImages).HasForeignKey(s => s.AdId);
             });
 
             builder.Entity<Ads>(e =>
@@ -103,7 +105,8 @@ namespace Schd.Data
                 e.HasQueryFilter(a => !a.IsDeleted);
             });
 
-            builder.Entity<OwnerTariff>(e=>{
+            builder.Entity<OwnerTariff>(e =>
+            {
                 e.HasKey(a => a.Id);
                 e.Property(e => e.Id).ValueGeneratedOnAdd();
                 e.HasQueryFilter(a => !a.IsDeleted);
@@ -139,6 +142,14 @@ namespace Schd.Data
                 e.HasQueryFilter(a => !a.IsDeleted);
             });
 
+            builder.Entity<QueuedSchedules>(e =>
+            {
+                e.HasKey(a => a.Id);
+                e.Property(a => a.Id).ValueGeneratedOnAdd();
+                e.HasQueryFilter(a => !a.IsDeleted);
+                e.HasOne<ScheduleTemplates>(a => a.Template).WithMany(a => a.QueuedSchedules).HasForeignKey(a => a.TemplateId);
+            });
+
             base.OnModelCreating(builder);
         }
         public override int SaveChanges()
@@ -160,7 +171,7 @@ namespace Schd.Data
         {
             var entry = Entry(entity);
 
-            switch(entry.State)
+            switch (entry.State)
             {
                 case EntityState.Modified:
                     entry.State = EntityState.Unchanged;
