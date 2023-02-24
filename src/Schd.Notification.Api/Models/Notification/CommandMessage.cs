@@ -7,6 +7,6 @@ namespace Schd.Notification.Api.Models.Notification
 {
     public class CommandMessage:IMessage
     {
-        public string Command
+        public string Command { get; set; }
     }
 }
