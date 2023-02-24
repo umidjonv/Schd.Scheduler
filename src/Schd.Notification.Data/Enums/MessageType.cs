@@ -1,11 +1,9 @@
 ﻿namespace Schd.Notification.Data.Enums
 {
-    public enum MessageType
+    public enum NotificationType
     {
-        Success,
-        Info,
-        Warning,
-        Error
-
+        Log,
+        Command,
+        Message
     }
 }

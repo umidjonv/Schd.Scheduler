@@ -13,9 +13,9 @@ namespace Schd.Notification.Data
 
         public virtual Client Client { get; set; }
 
-        public Guid NotifyId { get; set; }
+        public Guid EventId { get; set; }
 
-        public virtual Notify Notify { get; set; }
+        public virtual Event Event { get; set; }
 
     }
 }
