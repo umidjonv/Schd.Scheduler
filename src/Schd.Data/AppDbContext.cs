@@ -11,7 +11,7 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Schd.Data
+namespace Schd.Scheduler.Data
 {
     public class AppDbContext : DbContext, IAppDbContext
     {
@@ -33,27 +33,27 @@ namespace Schd.Data
             }
             //ip
             var userIp = _httpContext?.HttpContext?.Connection?.RemoteIpAddress?.ToString();
-            if(string.IsNullOrWhiteSpace(userIp))
+            if (string.IsNullOrWhiteSpace(userIp))
             {
                 var host = Dns.GetHostEntry(Dns.GetHostName());
                 userIp = host.AddressList
                     .FirstOrDefault(a => a.AddressFamily == AddressFamily.InterNetwork)?.ToString() ?? "::1";
             }
 
-            foreach(var entry in entries)
+            foreach (var entry in entries)
             {
                 ((AuditEntity)entry.Entity).ModifiedDate = DateTime.Now;
                 ((AuditEntity)entry.Entity).ModifiedIp = userIp;
                 ((AuditEntity)entry.Entity).ModifiedBy = userName;
 
-                if(entry.State == EntityState.Added)
+                if (entry.State == EntityState.Added)
                 {
                     ((AuditEntity)entry.Entity).CreatedDate = DateTime.Now;
                     ((AuditEntity)entry.Entity).CreatedIp = userIp;
                     ((AuditEntity)entry.Entity).CreatedBy = userName;
                 }
 
-                if(entry.State == EntityState.Deleted)
+                if (entry.State == EntityState.Deleted)
                 {
                     ((AuditEntity)entry.Entity).IsDeleted = true;
                     entry.State = EntityState.Modified;
@@ -77,7 +77,7 @@ namespace Schd.Data
                 e.HasKey(a => a.Id);
                 e.Property(a => a.Id).ValueGeneratedOnAdd();
                 e.HasQueryFilter(a => !a.IsDeleted);
-                e.HasOne<Ads>(s=>s.Ads).WithMany(s => s.AdImages).HasForeignKey(s => s.AdId);
+                e.HasOne(s => s.Ads).WithMany(s => s.AdImages).HasForeignKey(s => s.AdId);
             });
 
             builder.Entity<Ads>(e =>
@@ -85,7 +85,7 @@ namespace Schd.Data
                 e.HasKey(a => a.Id);
                 e.Property(a => a.Id).ValueGeneratedOnAdd();
                 e.HasQueryFilter(a => !a.IsDeleted);
-                e.HasOne<Owners>(s => s.Owners).WithMany(s => s.Ads).HasForeignKey(s => s.OwnerId);
+                e.HasOne(s => s.Owners).WithMany(s => s.Ads).HasForeignKey(s => s.OwnerId);
             });
 
             builder.Entity<Channels>(e =>
@@ -93,7 +93,7 @@ namespace Schd.Data
                 e.HasKey(a => a.Id);
                 e.Property(a => a.Id).ValueGeneratedOnAdd();
                 e.HasQueryFilter(a => !a.IsDeleted);
-                e.HasOne<Owners>(s => s.Owners).WithMany(s => s.Channels).HasForeignKey(s => s.OwnerId);
+                e.HasOne(s => s.Owners).WithMany(s => s.Channels).HasForeignKey(s => s.OwnerId);
             });
 
             builder.Entity<Owners>(e =>
@@ -103,11 +103,12 @@ namespace Schd.Data
                 e.HasQueryFilter(a => !a.IsDeleted);
             });
 
-            builder.Entity<OwnerTariff>(e=>{
+            builder.Entity<OwnerTariff>(e =>
+            {
                 e.HasKey(a => a.Id);
                 e.Property(e => e.Id).ValueGeneratedOnAdd();
                 e.HasQueryFilter(a => !a.IsDeleted);
-                e.HasOne<Owners>(s => s.Owners).WithMany(s => s.OwnerTariffs).HasForeignKey(s => s.OwnerId);
+                e.HasOne(s => s.Owners).WithMany(s => s.OwnerTariffs).HasForeignKey(s => s.OwnerId);
             });
 
             builder.Entity<ScheduleTemplates>(e =>
@@ -122,8 +123,8 @@ namespace Schd.Data
                 e.HasKey(a => a.Id);
                 e.Property(a => a.Id).ValueGeneratedOnAdd();
                 e.HasQueryFilter(a => !a.IsDeleted);
-                e.HasOne<Ads>(s => s.Ads).WithMany(s => s.ScheduledAds).HasForeignKey(s => s.AdId);
-                e.HasOne<ScheduleTemplates>(s => s.ScheduleTemplates).WithMany(s => s.ScheduledAds).HasForeignKey(s => s.SchedulerId);
+                e.HasOne(s => s.Ads).WithMany(s => s.ScheduledAds).HasForeignKey(s => s.AdId);
+                e.HasOne(s => s.ScheduleTemplates).WithMany(s => s.ScheduledAds).HasForeignKey(s => s.SchedulerId);
             });
 
             builder.Entity<Statistics>(e =>
@@ -160,7 +161,7 @@ namespace Schd.Data
         {
             var entry = Entry(entity);
 
-            switch(entry.State)
+            switch (entry.State)
             {
                 case EntityState.Modified:
                     entry.State = EntityState.Unchanged;

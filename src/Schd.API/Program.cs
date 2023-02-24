@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Schd.API.Data.Classes;
 using Schd.API.Data.Interfaces;
 using Schd.API.Models;
-using Schd.Data;
+using Schd.Scheduler.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);

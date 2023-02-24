@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Schd.API.Data.Interfaces;
 using Schd.API.Models;
-using Schd.Data;
 using Schd.Data.Entity;
 using Schd.Data.Enums;
+using Schd.Scheduler.Data;
 
 namespace Schd.API.Data.Classes
 {

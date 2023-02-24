@@ -7,7 +7,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Schd.Data
+namespace Schd.Scheduler.Data
 {
     public interface IAppDbContext : IDisposable
     {
