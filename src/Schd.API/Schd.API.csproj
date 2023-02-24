@@ -12,7 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\Scheduler\src\Schd.Data\Schd.Data.csproj" />
+      <ProjectReference Include="..\Schd.Data\Schd.Data.csproj" />
     </ItemGroup>
 
 </Project>
