@@ -10,7 +10,10 @@ namespace Schd.Notification.Data
 {
     public class AppDbContext: DbContext, IAppDbContext
     {
-        public DbSet<Notify> Notifies { get; set; }
+        public DbSet<Log> Logs { get; set; }
+        
+        public DbSet<Command> Commands { get; set; }
+
         public DbSet<Client> Clients { get; set; }
         public DbSet<State> States { get; set; }
         public DbSet<StateHistory> StateHistories { get; set; }
@@ -57,7 +60,7 @@ namespace Schd.Notification.Data
                 entity.HasQueryFilter(e => !e.IsDeleted);
             });
 
-            modelBuilder.Entity<Notify>(entity =>
+            modelBuilder.Entity<Event>(entity =>
             {
                 entity.HasKey(e => e.Id);
 
@@ -65,7 +68,7 @@ namespace Schd.Notification.Data
 
                 entity.HasQueryFilter(e => !e.IsDeleted);
 
-                entity.HasOne(e => e.Client).WithMany(e => e.Notifies).HasForeignKey(e => e.ClientId);
+                entity.HasOne(e => e.Client).WithMany(e => e.Events).HasForeignKey(e => e.ClientId);
             });
 
             modelBuilder.Entity<State>(entity =>
@@ -76,7 +79,7 @@ namespace Schd.Notification.Data
 
                 entity.HasQueryFilter(e => !e.IsDeleted);
 
-                entity.HasOne(e => e.Notify).WithMany(e => e.States).HasForeignKey(e => e.NotifyId);
+                entity.HasOne(e => e.Event).WithMany(e => e.States).HasForeignKey(e => e.EventId);
 
                 entity.HasOne(e => e.Client).WithMany(e => e.States).HasForeignKey(e => e.ClientId);
             });
@@ -91,7 +94,7 @@ namespace Schd.Notification.Data
 
                 entity.HasOne(e => e.Client).WithMany(e => e.StateHistories).HasForeignKey(e => e.ClientId);
 
-                entity.HasOne(e => e.Notify).WithMany(e => e.StateHistories).HasForeignKey(e => e.NotifyId);
+                entity.HasOne(e => e.Event).WithMany(e => e.StateHistories).HasForeignKey(e => e.EventId);
 
             });
 

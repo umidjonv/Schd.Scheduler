@@ -18,6 +18,6 @@ namespace Schd.Notification.Data
 
         public virtual List<StateHistory> StateHistories { get; set; } 
 
-        public virtual List<Notify> Notifies { get; set; } 
+        public virtual List<Event> Events { get; set; } 
     }
 }

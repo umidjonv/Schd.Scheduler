@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MassTransit;
 using Schd.Common;
 using Schd.Notification.Models.EventBus;
 
@@ -34,28 +33,10 @@ namespace Schd.Notification
 
             services.AddLogging();
 
-            services.AddMassTransit(x =>
-            {
-                x.UsingRabbitMq((ctx, cfg) =>
-                {
-                    cfg.Host(config.RabbitConnection);//, x =>
-                    //{
-                    //    x.Username(config.RabbitUsername);
-                    //    x.Password(config.RabbitPassword);
-                    //});
-
-                    cfg.ReceiveEndpoint("notify-queue", e =>
-                    {
-                        e.ConfigureConsumer<NotifyConsumer>(ctx);
-                    });
-
-                });
-            });
+            
 
             services.AddSwaggerGen();
 
-
-            services.AddMassTransitHostedService();
 
         }
 
