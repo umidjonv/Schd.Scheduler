@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
-using Schd.Notification.Data;
+using Schd.Data;
+using Schd.Scheduler.Data;
 
 namespace Schd.Migrations
 {
     public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
     {
         private readonly string _connectionString;
-        private const string NamespaceName = "Schd.Migrations";
+        private const string NamespaceName = "Schd.Scheduler.Migrations";
 
         public AppDbContextFactory()
         {
@@ -29,7 +31,9 @@ namespace Schd.Migrations
 
             optionsBuilder.UseNpgsql(_connectionString, b => b.MigrationsAssembly(NamespaceName));
 
-            return new AppDbContext(optionsBuilder.Options);
+            IHttpContextAccessor httpContextAccessor = new HttpContextAccessor();
+
+            return new AppDbContext(optionsBuilder.Options, httpContextAccessor);
         }
     }
 }
