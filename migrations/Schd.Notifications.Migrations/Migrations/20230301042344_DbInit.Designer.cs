@@ -12,8 +12,8 @@ using Schd.Notification.Data;
 namespace Schd.Notifications.Migrations.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230224123301_DBInit")]
-    partial class DBInit
+    [Migration("20230301042344_DbInit")]
+    partial class DbInit
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -53,10 +53,10 @@ namespace Schd.Notifications.Migrations.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Clients");
+                    b.ToTable("clients");
                 });
 
-            modelBuilder.Entity("Schd.Notification.Data.Notify", b =>
+            modelBuilder.Entity("Schd.Notification.Data.Command", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -74,28 +74,20 @@ namespace Schd.Notifications.Migrations.Migrations
                     b.Property<string>("Message")
                         .HasColumnType("text");
 
-                    b.Property<int>("MessageType")
-                        .HasColumnType("integer");
-
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("NotifyType")
+                    b.Property<int>("Type")
                         .HasColumnType("integer");
-
-                    b.Property<Guid?>("StateId")
-                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ClientId");
 
-                    b.HasIndex("StateId");
-
-                    b.ToTable("Notifies");
+                    b.ToTable("commands");
                 });
 
-            modelBuilder.Entity("Schd.Notification.Data.State", b =>
+            modelBuilder.Entity("Schd.Notification.Data.Event", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -113,11 +105,8 @@ namespace Schd.Notifications.Migrations.Migrations
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("NotifyId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("Time")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<int>("State")
+                        .HasColumnType("integer");
 
                     b.Property<int>("Type")
                         .HasColumnType("integer");
@@ -126,12 +115,10 @@ namespace Schd.Notifications.Migrations.Migrations
 
                     b.HasIndex("ClientId");
 
-                    b.HasIndex("NotifyId");
-
-                    b.ToTable("States");
+                    b.ToTable("events");
                 });
 
-            modelBuilder.Entity("Schd.Notification.Data.StateHistory", b =>
+            modelBuilder.Entity("Schd.Notification.Data.Log", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -146,11 +133,48 @@ namespace Schd.Notifications.Migrations.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("Message")
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("NotifyId")
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientId");
+
+                    b.ToTable("logs");
+                });
+
+            modelBuilder.Entity("Schd.Notification.Data.State", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<Guid>("ClientId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("CommandId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid?>("LogId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("Time")
                         .HasColumnType("timestamp with time zone");
@@ -162,22 +186,90 @@ namespace Schd.Notifications.Migrations.Migrations
 
                     b.HasIndex("ClientId");
 
-                    b.HasIndex("NotifyId");
+                    b.HasIndex("CommandId");
 
-                    b.ToTable("StateHistories");
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("LogId");
+
+                    b.ToTable("states");
                 });
 
-            modelBuilder.Entity("Schd.Notification.Data.Notify", b =>
+            modelBuilder.Entity("Schd.Notification.Data.StateHistory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ClientId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("CommandId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid?>("LogId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("Time")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientId");
+
+                    b.HasIndex("CommandId");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("LogId");
+
+                    b.ToTable("states_history");
+                });
+
+            modelBuilder.Entity("Schd.Notification.Data.Command", b =>
                 {
                     b.HasOne("Schd.Notification.Data.Client", "Client")
-                        .WithMany("Notifies")
+                        .WithMany()
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Schd.Notification.Data.State", null)
-                        .WithMany("Notifies")
-                        .HasForeignKey("StateId");
+                    b.Navigation("Client");
+                });
+
+            modelBuilder.Entity("Schd.Notification.Data.Event", b =>
+                {
+                    b.HasOne("Schd.Notification.Data.Client", "Client")
+                        .WithMany("Events")
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Client");
+                });
+
+            modelBuilder.Entity("Schd.Notification.Data.Log", b =>
+                {
+                    b.HasOne("Schd.Notification.Data.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Client");
                 });
@@ -190,15 +282,23 @@ namespace Schd.Notifications.Migrations.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Schd.Notification.Data.Notify", "Notify")
+                    b.HasOne("Schd.Notification.Data.Command", null)
                         .WithMany("States")
-                        .HasForeignKey("NotifyId")
+                        .HasForeignKey("CommandId");
+
+                    b.HasOne("Schd.Notification.Data.Event", "Event")
+                        .WithMany("States")
+                        .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Schd.Notification.Data.Log", null)
+                        .WithMany("States")
+                        .HasForeignKey("LogId");
+
                     b.Navigation("Client");
 
-                    b.Navigation("Notify");
+                    b.Navigation("Event");
                 });
 
             modelBuilder.Entity("Schd.Notification.Data.StateHistory", b =>
@@ -209,36 +309,53 @@ namespace Schd.Notifications.Migrations.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Schd.Notification.Data.Notify", "Notify")
+                    b.HasOne("Schd.Notification.Data.Command", null)
                         .WithMany("StateHistories")
-                        .HasForeignKey("NotifyId")
+                        .HasForeignKey("CommandId");
+
+                    b.HasOne("Schd.Notification.Data.Event", "Event")
+                        .WithMany("StateHistories")
+                        .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Schd.Notification.Data.Log", null)
+                        .WithMany("StateHistories")
+                        .HasForeignKey("LogId");
+
                     b.Navigation("Client");
 
-                    b.Navigation("Notify");
+                    b.Navigation("Event");
                 });
 
             modelBuilder.Entity("Schd.Notification.Data.Client", b =>
                 {
-                    b.Navigation("Notifies");
+                    b.Navigation("Events");
 
                     b.Navigation("StateHistories");
 
                     b.Navigation("States");
                 });
 
-            modelBuilder.Entity("Schd.Notification.Data.Notify", b =>
+            modelBuilder.Entity("Schd.Notification.Data.Command", b =>
                 {
                     b.Navigation("StateHistories");
 
                     b.Navigation("States");
                 });
 
-            modelBuilder.Entity("Schd.Notification.Data.State", b =>
+            modelBuilder.Entity("Schd.Notification.Data.Event", b =>
                 {
-                    b.Navigation("Notifies");
+                    b.Navigation("StateHistories");
+
+                    b.Navigation("States");
+                });
+
+            modelBuilder.Entity("Schd.Notification.Data.Log", b =>
+                {
+                    b.Navigation("StateHistories");
+
+                    b.Navigation("States");
                 });
 #pragma warning restore 612, 618
         }

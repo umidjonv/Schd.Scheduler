@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace Schd.Notification.Data
 {
+    [Table("clients")]
+
     public class Client:BaseEntity
     {
         public string Secret { get; set; }

@@ -8,6 +8,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using Microsoft.OpenApi.Extensions;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
@@ -30,7 +31,15 @@ namespace Schd.Notification.Api.EventBus.Providers
         
         public RabbitProvider(string host, string user, string password, string vhost = "/")
         {
-            _ = this.Connect(host, user, password,  vhost);
+
+            ConnectionFactory factory = new ConnectionFactory();
+            factory.DispatchConsumersAsync = true;
+            factory.UserName = user;
+            factory.Password = password;
+            factory.VirtualHost = vhost;
+            factory.HostName = host;
+
+            _connection = factory.CreateConnection(); //this.Connect(host, user, password,  vhost);
         }
 
         public async Task<bool> Connect(string connection)
@@ -74,7 +83,9 @@ namespace Schd.Notification.Api.EventBus.Providers
                     HostName = host,
                     VirtualHost = vhost,
                     UserName = user,
-                    Password = password
+                    Password = password,
+                    DispatchConsumersAsync = true,
+                    ClientProvidedName = "Notification service"
                 };
                 _connection = factory.CreateConnection(host);
             }
@@ -133,7 +144,9 @@ namespace Schd.Notification.Api.EventBus.Providers
 
         public void Publish(string exchangeName, object data, string route)
         {
-            byte[] messageBodyBytes = JsonConvert.SerializeObject(data).ObjectToBytes();
+            var objectJson = JsonConvert.SerializeObject(data);
+
+            byte[] messageBodyBytes = Encoding.ASCII.GetBytes(objectJson);
 
             //IBasicProperties props = Channel.CreateBasicProperties();
             //props.ContentType = "text/plain";

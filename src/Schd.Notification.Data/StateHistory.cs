@@ -1,8 +1,11 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using Schd.Notification.Data.Enums;
 
 namespace Schd.Notification.Data
 {
+    [Table("states_history")]
+
     public class StateHistory: BaseEntity
     {
         public DateTime Time { get; set; }

@@ -13,6 +13,8 @@ using Schd.Notification.Api.EventBus.Abstractions;
 using RabbitMQ.Client.Events;
 using Schd.Common.Helpers;
 using RabbitMQ.Client;
+using Newtonsoft.Json;
+using System.Text;
 
 namespace Schd.Notification.EventBus
 {
@@ -63,8 +65,8 @@ namespace Schd.Notification.EventBus
                 consumer.Received += async (data, eventArgs) =>
                 {
                     var body = eventArgs.Body.ToArray();
-
-                    var @event = body.Deserialize<T>();
+                    var convertibleObject = Encoding.ASCII.GetString(body, 0, body.Length);
+                    var @event = JsonConvert.DeserializeObject<T>(convertibleObject);
 
                     //if(handler)
                     await handler.Handle(@event, serviceName);
@@ -75,6 +77,7 @@ namespace Schd.Notification.EventBus
                 };
 
                 _provider.Channel.BasicConsume(GetQueueName(serviceName, handler.GetNotificationType()), false, consumer);
+                
             }
 
             

@@ -73,6 +73,7 @@ namespace Schd.Notification
 
             
             services.AddLogging();
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true); 
             services.AddDbContext<IAppDbContext, AppDbContext>(options=>options.UseNpgsql(dbConnection));
 
             ConfigureEventBus(services, config);
