@@ -4,6 +4,7 @@ using Schd.API.Models;
 using Schd.Data.Entity;
 using Schd.Data.Enums;
 using Schd.Scheduler.Data;
+using Schd.Scheduler.Data.Entity.Schedules;
 
 namespace Schd.API.Data.Classes
 {
@@ -75,7 +76,7 @@ namespace Schd.API.Data.Classes
         {
             if (item != null)
             {
-                var model = new ScheduleTemplates();
+                var model = new ScheduleTemplate();
                 model.Name = item.Name;
                 model.RegularityHours = (RegularityHours)item.RegularityTimesEnum;
                 model.RegularityDays = (RegularityDays)item.RegularityDaysEnum;

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Schd.Data.Entity;
 using Schd.Data.Entity.Base;
+using Schd.Scheduler.Data.Entity.Schedules;
 using System;
 using System.Linq;
 using System.Net;
@@ -61,19 +62,19 @@ namespace Schd.Scheduler.Data
             }
 
         }
-        public DbSet<AdImages> AdImages { get; set; }
-        public DbSet<Ads> Ads { get; set; }
-        public DbSet<Channels> Channels { get; set; }
-        public DbSet<Owners> Owners { get; set; }
+        public DbSet<AdImage> AdImages { get; set; }
+        public DbSet<Ad> Ads { get; set; }
+        public DbSet<Channel> Channels { get; set; }
+        public DbSet<Owner> Owners { get; set; }
         public DbSet<OwnerTariff> OwnerTariffs { get; set; }
-        public DbSet<ScheduledAds> ScheduledAds { get; set; }
-        public DbSet<ScheduleTemplates> Schedules { get; }
-        public DbSet<ScheduleTemplates> ScheduleTemplates { get; set; }
-        public DbSet<Statistics> Statistics { get; set; }
+        public DbSet<ScheduledAd> ScheduledAds { get; set; }
+        public DbSet<ScheduleTemplate> Schedules { get; }
+        public DbSet<ScheduleTemplate> ScheduleTemplates { get; set; }
+        public DbSet<Statistic> Statistics { get; set; }
         public DbSet<Tariff> Tariffs { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.Entity<AdImages>(e =>
+            builder.Entity<AdImage>(e =>
             {
                 e.HasKey(a => a.Id);
                 e.Property(a => a.Id).ValueGeneratedOnAdd();
@@ -81,7 +82,7 @@ namespace Schd.Scheduler.Data
                 e.HasOne(s => s.Ads).WithMany(s => s.AdImages).HasForeignKey(s => s.AdId);
             });
 
-            builder.Entity<Ads>(e =>
+            builder.Entity<Ad>(e =>
             {
                 e.HasKey(a => a.Id);
                 e.Property(a => a.Id).ValueGeneratedOnAdd();
@@ -89,7 +90,7 @@ namespace Schd.Scheduler.Data
                 e.HasOne(s => s.Owners).WithMany(s => s.Ads).HasForeignKey(s => s.OwnerId);
             });
 
-            builder.Entity<Channels>(e =>
+            builder.Entity<Channel>(e =>
             {
                 e.HasKey(a => a.Id);
                 e.Property(a => a.Id).ValueGeneratedOnAdd();
@@ -97,7 +98,7 @@ namespace Schd.Scheduler.Data
                 e.HasOne(s => s.Owners).WithMany(s => s.Channels).HasForeignKey(s => s.OwnerId);
             });
 
-            builder.Entity<Owners>(e =>
+            builder.Entity<Owner>(e =>
             {
                 e.HasKey(a => a.Id);
                 e.Property(a => a.Id).ValueGeneratedOnAdd();
@@ -112,23 +113,23 @@ namespace Schd.Scheduler.Data
                 e.HasOne(s => s.Owners).WithMany(s => s.OwnerTariffs).HasForeignKey(s => s.OwnerId);
             });
 
-            builder.Entity<ScheduleTemplates>(e =>
+            builder.Entity<ScheduleTemplate>(e =>
             {
                 e.HasKey(a => a.Id);
                 e.Property(a => a.Id).ValueGeneratedOnAdd();
                 e.HasQueryFilter(a => !a.IsDeleted);
             });
 
-            builder.Entity<ScheduledAds>(e =>
+            builder.Entity<ScheduledAd>(e =>
             {
                 e.HasKey(a => a.Id);
                 e.Property(a => a.Id).ValueGeneratedOnAdd();
                 e.HasQueryFilter(a => !a.IsDeleted);
-                e.HasOne<Ads>(s => s.Ads).WithMany(s => s.ScheduledAds).HasForeignKey(s => s.AdId);
+                e.HasOne<Ad>(s => s.Ads).WithMany(s => s.ScheduledAds).HasForeignKey(s => s.AdId);
                 //e.HasOne<ScheduleTemplates>(s => s.ScheduleTemplates).WithMany(s => s.ScheduledAds).HasForeignKey(s => s.SchedulerId);
             });
 
-            builder.Entity<Statistics>(e =>
+            builder.Entity<Statistic>(e =>
             {
                 e.HasKey(a => a.Id);
                 e.Property(a => a.Id).ValueGeneratedOnAdd();

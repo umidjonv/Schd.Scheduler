@@ -5,10 +5,10 @@ using System.Text;
 using Schd.Data.Entity.Base;
 using Schd.Data.Enums;
 
-namespace Schd.Data.Entity
+namespace Schd.Scheduler.Data.Entity.Schedules
 {
     [Table("SCHEDULE_TEMPLATES")]
-    public class ScheduleTemplates : AuditEntity
+    public class ScheduleTemplate : AuditEntity
     {
         public string Name { get; set; }
         public RegularityHours RegularityHours { get; set; }

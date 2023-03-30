@@ -5,13 +5,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Schd.Data.Entity
 {
     [Table("ADS_IMAGES")]
-    public class AdImages : AuditEntity
+    public class AdImage : AuditEntity
     {
         [Required]
         [StringLength(255)]
         public string Name { get; set; }
         [Required]
         public long AdId{ get; set; }
-        public virtual Ads Ads { get; set; }
+        public virtual Ad Ads { get; set; }
     }
 }

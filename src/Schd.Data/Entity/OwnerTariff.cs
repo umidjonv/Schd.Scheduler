@@ -10,7 +10,7 @@ namespace Schd.Data.Entity
     {
         [Required]
         public long OwnerId { get; set; }
-        public virtual Owners Owners { get; set; }
+        public virtual Owner Owners { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
     }

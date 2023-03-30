@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Schd.Data.Entity
 {
     [Table("STATISTICS")]
-    public class Statistics : BaseEntity
+    public class Statistic : BaseEntity
     {
         public DateTime RevisionDate { get; set; }
         public int UsersCount { get; set; }

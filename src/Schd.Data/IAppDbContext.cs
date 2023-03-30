@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Schd.Data.Entity;
 using Schd.Data.Entity.Base;
+using Schd.Scheduler.Data.Entity.Schedules;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,14 +12,14 @@ namespace Schd.Scheduler.Data
 {
     public interface IAppDbContext : IDisposable
     {
-        DbSet<AdImages> AdImages { get; }
-        DbSet<Ads> Ads { get; }
-        DbSet<Channels> Channels { get; }
-        DbSet<Owners> Owners { get; }
+        DbSet<AdImage> AdImages { get; }
+        DbSet<Ad> Ads { get; }
+        DbSet<Channel> Channels { get; }
+        DbSet<Owner> Owners { get; }
         DbSet<OwnerTariff> OwnerTariffs { get; }
-        DbSet<ScheduledAds> ScheduledAds { get; }
-        DbSet<ScheduleTemplates> ScheduleTemplates { get; }
-        DbSet<Statistics> Statistics { get; }
+        DbSet<ScheduledAd> ScheduledAds { get; }
+        DbSet<ScheduleTemplate> ScheduleTemplates { get; }
+        DbSet<Statistic> Statistics { get; }
         DbSet<Tariff> Tariffs { get; }
         int SaveChanges();
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
